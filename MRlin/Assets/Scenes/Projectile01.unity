@@ -257,9 +257,10 @@ GameObject:
   - component: {fileID: 860761713}
   - component: {fileID: 860761712}
   - component: {fileID: 860761711}
+  - component: {fileID: 860761715}
   m_Layer: 0
   m_Name: Wall
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -272,7 +273,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 860761710}
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
@@ -340,6 +341,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!54 &860761715
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 860761710}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 126
+  m_CollisionDetection: 1
 --- !u!1 &1068511298
 GameObject:
   m_ObjectHideFlags: 0
@@ -532,7 +549,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e89eeb246f5b5b4d9ae0dfd7880754c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  effect: {fileID: 2347504252559429097, guid: 7e6fcca3e3fd39c4db97c83fc99e8690, type: 3}
+  effect: {fileID: 4498426097218073007, guid: 0506a493cd078004781732c0f13a4089, type: 3}
   firePoint: {fileID: 427844668}
 --- !u!1 &2144428403
 GameObject:
@@ -548,7 +565,7 @@ GameObject:
   - component: {fileID: 2144428404}
   m_Layer: 0
   m_Name: Wall (1)
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
