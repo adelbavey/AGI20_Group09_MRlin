@@ -26,6 +26,7 @@ public class ProjectileManager : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         speed = 0;
+        transform.position = other.transform.position - Vector3.forward * other.transform.localScale.z / 2;
         Explode();
         //Invoke("Explode", 3.0f);
     }
