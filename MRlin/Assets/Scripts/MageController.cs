@@ -159,7 +159,6 @@ public class MageController : MonoBehaviour
                 runeTransform.GetChild(2).GetChild(2).GetChild(0).GetComponent<ParticleSystem>().Play();
             }
         }
-
     }
 
     private void FixedUpdate()
@@ -174,7 +173,7 @@ public class MageController : MonoBehaviour
     private void OnAnimatorIK()
     {
         // Wand targeting IK
-        animator.SetIKPositionWeight(AvatarIKGoal.RightHand, 1);
+        animator.SetIKPositionWeight(AvatarIKGoal.RightHand, 0.8f);
         animator.SetIKPosition(AvatarIKGoal.RightHand, targetTransform.position);
     }
 }
