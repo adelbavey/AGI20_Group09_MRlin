@@ -56,8 +56,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\MageController.cs" />
-    <Compile Include="Assets\Scripts\SpellProjectile.cs" />
     <Compile Include="Assets\Scripts\MageCastProjectiles.cs" />
+    <Compile Include="Assets\Scripts\SpellProjectile.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\Ix Testing Assets\3DCharacterDummy\Readme.txt" />

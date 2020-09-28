@@ -9,6 +9,9 @@ public class MageController : MonoBehaviour
     public Transform wandTransform;
     public Transform wandMagicTransform;
     public Transform runeTransform;
+    public AudioSource leftRune;
+    public AudioSource midRune;
+    public AudioSource rightRune;
 
     public LayerMask mouseAimMask;
 
@@ -123,18 +126,21 @@ public class MageController : MonoBehaviour
         if (currentRune == runeHolder.Left) {
             if (Input.GetKeyDown(KeyCode.Q))
             {
+                leftRune.Play();
                 RuneStart(0, 0);
                 elementCombi[0] = runeElement.Ice;
                 currentRune = runeHolder.Middle;
             }
             else if (Input.GetKeyDown(KeyCode.W))
             {
+                leftRune.Play();
                 RuneStart(0, 1);
                 elementCombi[0] = runeElement.Storm;
                 currentRune = runeHolder.Middle;
             }
             else if (Input.GetKeyDown(KeyCode.E))
             {
+                leftRune.Play();
                 RuneStart(0, 2);
                 elementCombi[0] = runeElement.Fire;
                 currentRune = runeHolder.Middle;
@@ -144,18 +150,21 @@ public class MageController : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Q))
             {
+                midRune.Play();
                 RuneStart(1, 0);
                 elementCombi[1] = runeElement.Ice;
                 currentRune = runeHolder.Right;
             }
             else if (Input.GetKeyDown(KeyCode.W))
             {
+                midRune.Play();
                 RuneStart(1, 1);
                 elementCombi[1] = runeElement.Storm;
                 currentRune = runeHolder.Right;
             }
             else if (Input.GetKeyDown(KeyCode.E))
             {
+                midRune.Play();
                 RuneStart(1, 2);
                 elementCombi[1] = runeElement.Fire;
                 currentRune = runeHolder.Right;
@@ -165,18 +174,21 @@ public class MageController : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Q))
             {
+                rightRune.Play();
                 RuneStart(2, 0);
                 elementCombi[2] = runeElement.Ice;
                 currentRune = runeHolder.Finished;
             }
             else if (Input.GetKeyDown(KeyCode.W))
             {
+                rightRune.Play();
                 RuneStart(2, 1);
                 elementCombi[2] = runeElement.Storm;
                 currentRune = runeHolder.Finished;
             }
             else if (Input.GetKeyDown(KeyCode.E))
             {
+                rightRune.Play();
                 RuneStart(2, 2);
                 elementCombi[2] = runeElement.Fire;
                 currentRune = runeHolder.Finished;
