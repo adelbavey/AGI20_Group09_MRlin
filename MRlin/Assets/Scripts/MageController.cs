@@ -9,6 +9,9 @@ public class MageController : MonoBehaviour
     public Transform wandTransform;
     public Transform wandMagicTransform;
     public Transform runeTransform;
+    public AudioSource leftRune;
+    public AudioSource midRune;
+    public AudioSource rightRune;
 
     public LayerMask mouseAimMask;
 
@@ -121,6 +124,7 @@ public class MageController : MonoBehaviour
     private void SpellingPhase()
     {
         if (currentRune == runeHolder.Left) {
+            leftRune.Play();
             if (Input.GetKeyDown(KeyCode.Q))
             {
                 RuneStart(0, 0);
@@ -142,6 +146,7 @@ public class MageController : MonoBehaviour
         }
         else if (currentRune == runeHolder.Middle)
         {
+            midRune.Play();
             if (Input.GetKeyDown(KeyCode.Q))
             {
                 RuneStart(1, 0);
@@ -163,6 +168,7 @@ public class MageController : MonoBehaviour
         }
         else if (currentRune == runeHolder.Right)
         {
+            rightRune.Play();
             if (Input.GetKeyDown(KeyCode.Q))
             {
                 RuneStart(2, 0);
