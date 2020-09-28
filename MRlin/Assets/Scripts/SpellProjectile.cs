@@ -35,9 +35,10 @@ public class SpellProjectile : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        // If the collision is not caused by mage
         if (other.GetComponent<MageController>() == null)
         {
-            Debug.Log("Hit");
+            //Debug.Log("Hit");
             transform.GetChild(0).GetChild(this.runeElements[0]).GetComponent<ParticleSystem>().Stop();
             transform.GetChild(1).GetChild(this.runeElements[1]).GetComponent<ParticleSystem>().Stop();
             transform.GetChild(2).GetChild(this.runeElements[2]).GetComponent<ParticleSystem>().Stop();
