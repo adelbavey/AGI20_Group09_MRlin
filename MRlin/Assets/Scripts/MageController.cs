@@ -225,10 +225,11 @@ public class MageController : MonoBehaviour
         rBody.MoveRotation(Quaternion.Euler(new Vector3(0, Mathf.Atan2(targetVector.x, targetVector.z) * Mathf.Rad2Deg, 0)));
     }
 
+    // Called by the base layer of Mage Animator Controller
     private void OnAnimatorIK()
     {
         // Wand targeting IK
-        animator.SetIKPositionWeight(AvatarIKGoal.RightHand, 0.8f);
+        animator.SetIKPositionWeight(AvatarIKGoal.RightHand, 0.7f);
         animator.SetIKPosition(AvatarIKGoal.RightHand, targetTransform.position);
     }
 }

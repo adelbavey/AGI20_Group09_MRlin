@@ -7,13 +7,18 @@ public class SpellProjectile : MonoBehaviour
     public AudioSource casting;
     public AudioSource explosion;
 
+    private Transform mage;
     private Vector3 castDir;
     private int[] runeElements;
     private bool explosionAudio = false;
-    public void SetUp(Transform wandTransform, int[] runeElements)
+    public void SetUp(Transform wandTransform, int[] runeElements, Transform mageTransform)
     {
         this.castDir = wandTransform.right;
         this.runeElements = runeElements;
+        mage = mageTransform;
+
+        // Ignore collision between spell and mage
+        Physics.IgnoreCollision(mage.GetComponent<Collider>(), transform.GetComponent<Collider>());
         transform.GetChild(0).GetChild(this.runeElements[0]).GetComponent<ParticleSystem>().Play();
         transform.GetChild(1).GetChild(this.runeElements[1]).GetComponent<ParticleSystem>().Play();
         transform.GetChild(2).GetChild(this.runeElements[2]).GetComponent<ParticleSystem>().Play();
