@@ -4,5 +4,21 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
-  m_configObjects: {}
+  m_Scenes:
+  - enabled: 0
+    path: Assets/Scenes/phoneTest.unity
+    guid: e8929f704a9e10d4c9e7de003a887d47
+  - enabled: 0
+    path: Assets/Scenes/networkTest.unity
+    guid: bdafd6876d3044b4a8274816fe193807
+  - enabled: 0
+    path: Assets/Mirror/Examples/Basic/Scenes/Example.unity
+    guid: b30904751905d3f4dacde62ac85ec7c2
+  - enabled: 0
+    path: Assets/Mirror/Examples/Pong/Scenes/Scene.unity
+    guid: 89a84548859e3b643b4fb27984dc2b0d
+  - enabled: 1
+    path: Assets/CubeNetworkTest/NetCubeTest.unity
+    guid: cec7eb823fe01b94f8f098c965457511
+  m_configObjects:
+    com.unity.input.settings: {fileID: 11400000, guid: 3cea6c3c8b006554287651bd238801c4, type: 2}
