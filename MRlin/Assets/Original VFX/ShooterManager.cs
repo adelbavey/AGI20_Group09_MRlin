@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+ * The shooter will instantiate some given "effect" gameobject at its firePoint at MouseButtonDown.
+ */
 public class ShooterManager : MonoBehaviour
 {
     public GameObject effect;
@@ -23,6 +26,9 @@ public class ShooterManager : MonoBehaviour
         }
     }
 
+    /*
+     * Fire instantialtes the given effect/projectile.
+     */
     void Fire(GameObject effect)
     {
         GameObject shot = Instantiate(effect, firePoint.transform.position, Quaternion.identity);

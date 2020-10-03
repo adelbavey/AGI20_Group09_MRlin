@@ -8,12 +8,13 @@ using UnityEngine.VFX.Utility;
 
 public class PartialProjectileManager : MonoBehaviour
 {
-
+    // speed is 0, projectile is moved within vfx graph.
     public float speed = 0f;
 
     // Start is called before the first frame update
     void Start()
     {
+        // need Invoke to call Explode 3s after start.
         Invoke("Explode", 3.0f);
     }
 
@@ -26,10 +27,11 @@ public class PartialProjectileManager : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         speed = 0;
-        //transform.position = other.transform.position - Vector3.forward * other.transform.localScale.z / 2;
-        //Explode();
-        //Invoke("Explode", 3.0f);
     }
+
+    /*
+     * Self-destruct.
+     */
     private void Explode()
     {
         foreach (Transform child in transform)
