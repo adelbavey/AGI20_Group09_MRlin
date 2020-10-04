@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MageController : MonoBehaviour
+using Mirror;
+
+public class MageController : NetworkBehaviour
 {
     public Transform targetTransform;
     public Transform wandTransform;
@@ -68,18 +70,18 @@ public class MageController : MonoBehaviour
             targetTransform.position = hit.point;
         }
 
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && false)
         {
-            StartSpellingPhase(true);
+            RpcStartSpellingPhase(true);
         }
         else if (Input.GetMouseButtonUp(0))
         {
-            StartSpellingPhase(false);
+            RpcStartSpellingPhase(false);
         }
 
         if (currentPhase == gamePhase.Spelling)
         {
-            SpellingPhase();
+            RpcSpellingPhase();
         }
 
         if (Input.GetKeyDown(KeyCode.R))
@@ -90,19 +92,36 @@ public class MageController : MonoBehaviour
                 currentPhase = gamePhase.Casting;
             }
         }
-        else if (Input.GetKeyUp(KeyCode.R))
+        //else if (Input.GetKeyUp(KeyCode.R))
+        else if(Input.GetMouseButtonDown(0))
         {
-            if (currentPhase == gamePhase.Casting)
+            if (currentPhase == gamePhase.Casting || true)
             {
                 // Check if the subscriber is null and pass in spell element info
+                
+                /*
                 OnCastingStarts?.Invoke(this, new OnCastingStartsEventArgs {
                     wandTransform = this.wandTransform,
                     runeElements = new int[3] { (int)elementCombi[0], (int)elementCombi[1], (int)elementCombi[2] } });;
+                */
+                RpcCastSpells();
             }
         }
     }
 
-    private void StartSpellingPhase(bool b)
+    [ClientRpc]
+    private void RpcCastSpells()
+    {
+        // Check if the subscriber is null and pass in spell element info
+        OnCastingStarts?.Invoke(this, new OnCastingStartsEventArgs
+        {
+            wandTransform = this.wandTransform,
+            runeElements = new int[3] { (int)elementCombi[0], (int)elementCombi[1], (int)elementCombi[2] }
+        }); ;
+    }
+
+    [ClientRpc]
+    private void RpcStartSpellingPhase(bool b)
     {
         if (b)
         {
@@ -121,7 +140,8 @@ public class MageController : MonoBehaviour
         }
     }
 
-    private void SpellingPhase()
+    [ClientRpc]
+    private void RpcSpellingPhase()
     {
         if (currentRune == runeHolder.Left) {
             if (Input.GetKeyDown(KeyCode.Q))
