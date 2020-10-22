@@ -20,8 +20,12 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Legacy/CubeNetworkTest/NetCubeTest.unity
     guid: cec7eb823fe01b94f8f098c965457511
-  - enabled: 1
+  - enabled: 0
     path: Assets/Legacy/ANS/ANS.unity
     guid: d664278196260b248859ed4779e28646
+  - enabled: 1
+    path: Assets/Team/Jaime/UI/PcApp/Scenes/Scene 1. Startup screen/1. Startup screen
+      1.unity
+    guid: 190f13f8a6afea547b3fb83c34637a39
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 3cea6c3c8b006554287651bd238801c4, type: 2}
