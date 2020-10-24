@@ -24,8 +24,13 @@ EditorBuildSettings:
     path: Assets/Legacy/ANS/ANS.unity
     guid: d664278196260b248859ed4779e28646
   - enabled: 1
+<<<<<<< HEAD
     path: Assets/Team/Jaime/UI/PcApp/Scenes/Scene 1. Startup screen/1. Startup screen
       1.unity
     guid: 190f13f8a6afea547b3fb83c34637a39
+=======
+    path: Assets/Team/Alejandro/Scenes/Gyro Test.unity
+    guid: 6f16215c4c72d4e439d58d27a9c10ec1
+>>>>>>> main
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 3cea6c3c8b006554287651bd238801c4, type: 2}
