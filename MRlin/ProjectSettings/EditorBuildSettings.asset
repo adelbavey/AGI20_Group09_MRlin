@@ -28,11 +28,19 @@ EditorBuildSettings:
       1.unity
     guid: 190f13f8a6afea547b3fb83c34637a39
   - enabled: 0
-    path: Assets/Team/Jaime/UI/PcApp/Scenes/Scene 2. Phone Connect screen/2. Phone
-      Connect screen.unity
-    guid: 493c4c3a59ddb194e8efa053f77539e9
-  - enabled: 1
+    path: 
+    guid: 00000000000000000000000000000000
+  - enabled: 0
     path: Assets/Team/Alejandro/Scenes/Gyro Test.unity
     guid: 6f16215c4c72d4e439d58d27a9c10ec1
+  - enabled: 1
+    path: Assets/Team/Jaime/NetworkTest/NetworkTesting.unity
+    guid: fd00b4608e110004fb4e4af7c945fdaf
+  - enabled: 1
+    path: Assets/Team/Jaime/NetworkTest/PhoneApp/1. Home screen 1.unity
+    guid: 3dabee98f0e57dd4fa9ec059b464d1bd
+  - enabled: 1
+    path: Assets/Team/Jaime/NetworkTest/PhoneApp/2. ConnectingScreen.unity
+    guid: 794004397af8ec34ca2d842d5174c9ee
   m_configObjects:
-    com.unity.input.settings: {fileID: 11400000, guid: 3cea6c3c8b006554287651bd238801c4, type: 2}
+    com.unity.input.settings: {fileID: 11400000, guid: 904ead38780c3164889001d56448b55c, type: 2}

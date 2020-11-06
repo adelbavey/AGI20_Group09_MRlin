@@ -4,6 +4,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 
+
 public class Scene1Script : MonoBehaviour
 {
     public float interval;

@@ -45,6 +45,11 @@ public class GyroController : MonoBehaviour
 			cameraBase * (ConvertRotation(referenceRotation * Input.gyro.attitude) * GetRotFix()), lowPassFilterFactor);
 	}
 
+	private Quaternion ownFix(Quaternion q)
+	{
+		return q *Quaternion.Euler(180.0f,0.0f,0.0f);
+	}
+
 	protected void OnGUI()
 	{
 		if (!debug)

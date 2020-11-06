@@ -40,6 +40,6 @@ public static class DeviceRotation
 
     private static Quaternion ReadGyroscopeRotation()
     {
-        return Quaternion.Inverse(initRot) * Input.gyro.attitude /**  new Quaternion(0, 0, 1, 0) */;
+        return Input.gyro.attitude * Quaternion.Inverse(initRot) /**  new Quaternion(0, 0, 1, 0) */;
     }
 }
