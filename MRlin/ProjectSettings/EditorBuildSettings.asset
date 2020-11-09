@@ -30,17 +30,20 @@ EditorBuildSettings:
   - enabled: 0
     path: 
     guid: 00000000000000000000000000000000
-  - enabled: 0
+  - enabled: 1
     path: Assets/Team/Alejandro/Scenes/Gyro Test.unity
     guid: 6f16215c4c72d4e439d58d27a9c10ec1
-  - enabled: 1
+  - enabled: 0
     path: Assets/Team/Jaime/NetworkTest/NetworkTesting.unity
     guid: fd00b4608e110004fb4e4af7c945fdaf
-  - enabled: 1
+  - enabled: 0
     path: Assets/Team/Jaime/NetworkTest/PhoneApp/1. Home screen 1.unity
     guid: 3dabee98f0e57dd4fa9ec059b464d1bd
-  - enabled: 1
+  - enabled: 0
     path: Assets/Team/Jaime/NetworkTest/PhoneApp/2. ConnectingScreen.unity
     guid: 794004397af8ec34ca2d842d5174c9ee
+  - enabled: 1
+    path: Assets/Team/Yufei/Scenes/Interaction Testing 1.unity
+    guid: 25b9715909c1a5940968f29676602e65
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 904ead38780c3164889001d56448b55c, type: 2}
