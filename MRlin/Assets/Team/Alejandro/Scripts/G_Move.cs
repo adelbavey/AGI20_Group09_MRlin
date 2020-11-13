@@ -103,7 +103,7 @@ public class G_Move : MonoBehaviour
 			// nextAttitude, lowPassFilterFactor);
             
             // WITHOUT SPHERICAL LERPING
-            transform.rotation = complimentaryFilter(nextAttitude) /** nextAttitude*/;
+            transform.rotation = /*complimentaryFilter(nextAttitude) */ nextAttitude;
 
             //transform.rotation = Quaternion.Euler(Input.gyro.rotationRateUnbiased);
 
