@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class MageControllerNew : MonoBehaviour
 {
+    public bool phoneInteraction = true;
     public Transform targetTransform;
     public Transform wandTransform;
     public Transform wandMagicTransform;
@@ -32,7 +33,7 @@ public class MageControllerNew : MonoBehaviour
     private gamePhase currentPhase;
     private enum runeHolder { Left, Middle, Right, Finished };
     private enum runeElement { Ice, Storm, Fire };
-    private runeElement[] elementCombi;
+    private runeElement[] elementCombi = { runeElement.Ice, runeElement.Ice, runeElement.Ice };
     private runeHolder currentRune;
 
     private Camera mainCamera;
@@ -60,49 +61,75 @@ public class MageControllerNew : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-        Ray newRay = new Ray(gyroRayObject.position, gyroRayObject.forward);
-
-        RaycastHit hit;
-
-        // Mouse aim hit to invisible mouse target (Mouse Target layer)
-        if (Physics.Raycast(newRay, out hit, Mathf.Infinity, mouseAimMask))
+        if (phoneInteraction)
         {
-            targetTransform.position = hit.point;
-        }
+            //
+            Ray newRay = new Ray(gyroRayObject.position, gyroRayObject.forward);
 
-        if (Input.GetMouseButtonDown(0))
-        {
-            StartSpellingPhase(true);
-        }
-        else if (Input.GetMouseButtonUp(0))
-        {
-            StartSpellingPhase(false);
-        }
-
-        if (currentPhase == gamePhase.Spelling)
-        {
-            SpellingPhase();
-        }
-
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            if (currentPhase == gamePhase.Idle && currentRune == runeHolder.Finished)
+            RaycastHit hit;
+            if (Physics.Raycast(newRay, out hit, Mathf.Infinity, mouseAimMask))
             {
-                RuneStop(3, 3);
-                currentPhase = gamePhase.Casting;
+                targetTransform.position = hit.point;
             }
-        }
-        else if (Input.GetKeyUp(KeyCode.R))
-        {
-            if (currentPhase == gamePhase.Casting)
+
+            if (Input.GetMouseButtonDown(0))
             {
+                StartSpellingPhase(true);
+            }
+            else if (Input.GetMouseButtonUp(0))
+            {
+                StartSpellingPhase(false);
                 // Check if the subscriber is null and pass in spell element info
                 OnCastingStarts?.Invoke(this, new OnCastingStartsEventArgs
                 {
                     wandTransform = this.wandTransform,
                     runeElements = new int[3] { (int)elementCombi[0], (int)elementCombi[1], (int)elementCombi[2] }
-                }); ;
+                });
+            }
+        }
+        else // Keyboard and mouse
+        {
+            Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            // Mouse aim hit to invisible mouse target (Mouse Target layer)
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity, mouseAimMask))
+            {
+                targetTransform.position = hit.point;
+            }
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                StartSpellingPhase(true);
+            }
+            else if (Input.GetMouseButtonUp(0))
+            {
+                StartSpellingPhase(false);
+            }
+
+            if (currentPhase == gamePhase.Spelling)
+            {
+                SpellingPhase();
+            }
+
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                if (currentPhase == gamePhase.Idle && currentRune == runeHolder.Finished)
+                {
+                    RuneStop(3, 3);
+                    currentPhase = gamePhase.Casting;
+                }
+            }
+            else if (Input.GetKeyUp(KeyCode.R))
+            {
+                if (currentPhase == gamePhase.Casting)
+                {
+                    // Check if the subscriber is null and pass in spell element info
+                    OnCastingStarts?.Invoke(this, new OnCastingStartsEventArgs
+                    {
+                        wandTransform = this.wandTransform,
+                        runeElements = new int[3] { (int)elementCombi[0], (int)elementCombi[1], (int)elementCombi[2] }
+                    });
+                }
             }
         }
     }
@@ -235,7 +262,7 @@ public class MageControllerNew : MonoBehaviour
     private void OnAnimatorIK()
     {
         // Wand targeting IK
-        animator.SetIKPositionWeight(AvatarIKGoal.RightHand, 0.7f);
+        animator.SetIKPositionWeight(AvatarIKGoal.RightHand, 0.5f);
         animator.SetIKPosition(AvatarIKGoal.RightHand, targetTransform.position);
     }
 }

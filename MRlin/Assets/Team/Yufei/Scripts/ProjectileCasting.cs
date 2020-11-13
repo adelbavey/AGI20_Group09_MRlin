@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class ProjectileCasting : MonoBehaviour
 {
+    public AudioSource castingAudio;
     [SerializeField] private Transform SpellProjectile;
     // Start is called before the first frame update
     void Start()
@@ -14,8 +15,9 @@ public class ProjectileCasting : MonoBehaviour
 
     private void ProjectileCasting_OnCastingStarts(object sender, MageControllerNew.OnCastingStartsEventArgs e)
     {
-        Transform spellTransform = Instantiate(SpellProjectile, e.wandTransform.position, Quaternion.identity);
-        spellTransform.GetComponent<SpellProjectileNew>().SetUp(e.wandTransform, e.runeElements, transform);
+        Transform spellTransform = Instantiate(SpellProjectile, e.wandTransform.position, Quaternion.Euler(0, 30, 0));
+        castingAudio.volume = 0.8f;
+        castingAudio.Play();
     }
 
 

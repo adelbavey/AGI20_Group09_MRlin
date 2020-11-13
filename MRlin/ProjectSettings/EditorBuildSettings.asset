@@ -30,7 +30,7 @@ EditorBuildSettings:
   - enabled: 0
     path: 
     guid: 00000000000000000000000000000000
-  - enabled: 1
+  - enabled: 0
     path: Assets/Team/Alejandro/Scenes/Gyro Test.unity
     guid: 6f16215c4c72d4e439d58d27a9c10ec1
   - enabled: 0
