@@ -48,7 +48,7 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 10
+      - m_Value: 12
         m_Name: Distance
         m_Overridden: 1
     m_Vector2f:
@@ -164,7 +164,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c87b0a504d42f74da3a0a2ac4f2a19e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 0
+  speed: 5
 --- !u!65 &472752266862361162
 BoxCollider:
   m_ObjectHideFlags: 0

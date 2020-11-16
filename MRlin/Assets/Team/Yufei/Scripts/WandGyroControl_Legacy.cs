@@ -82,6 +82,7 @@ public class WandGyroControl : MonoBehaviour
         Quaternion tempQuaternion = new Quaternion(-q.x, -q.z, -q.y, q.w)/**Quaternion.Euler(0,0,0)*/;
         tempEuler = tempQuaternion.eulerAngles;
         return Quaternion.Euler(tempEuler.z, tempEuler.y, -tempEuler.x);
+        //return new Quaternion(-q.x, -q.z, -q.y, q.w);
     }
     private void placeCursor()
     {

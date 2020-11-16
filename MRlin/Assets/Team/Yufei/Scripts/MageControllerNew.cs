@@ -17,6 +17,9 @@ public class MageControllerNew : MonoBehaviour
     public LayerMask mouseAimMask;
     public Transform gyroRayObject;
 
+    public int currentHealth;
+    public HealthBar healthBar;
+
     public event EventHandler<OnCastingStartsEventArgs> OnCastingStarts;
     public class OnCastingStartsEventArgs : EventArgs
     {
@@ -56,6 +59,9 @@ public class MageControllerNew : MonoBehaviour
 
         Cursor.visible = false;
         wandMagicTrail.enabled = false;
+
+        currentHealth = 100;
+        healthBar.setHealth(currentHealth);
     }
 
     // Update is called once per frame
@@ -85,6 +91,7 @@ public class MageControllerNew : MonoBehaviour
                     wandTransform = this.wandTransform,
                     runeElements = new int[3] { (int)elementCombi[0], (int)elementCombi[1], (int)elementCombi[2] }
                 });
+                Invoke("Damage", 1.0f);
             }
         }
         else // Keyboard and mouse
@@ -262,7 +269,17 @@ public class MageControllerNew : MonoBehaviour
     private void OnAnimatorIK()
     {
         // Wand targeting IK
-        animator.SetIKPositionWeight(AvatarIKGoal.RightHand, 0.5f);
+        animator.SetIKPositionWeight(AvatarIKGoal.RightHand, 0.7f);
         animator.SetIKPosition(AvatarIKGoal.RightHand, targetTransform.position);
     }
+
+    private void Damage()
+    {
+        if (currentHealth > 0)
+        {
+            currentHealth -= 10;
+        }
+        healthBar.setHealth(currentHealth);
+    }
 }
+

@@ -15,9 +15,10 @@ public class ProjectileCasting : MonoBehaviour
 
     private void ProjectileCasting_OnCastingStarts(object sender, MageControllerNew.OnCastingStartsEventArgs e)
     {
-        Transform spellTransform = Instantiate(SpellProjectile, e.wandTransform.position, Quaternion.Euler(0, 30, 0));
+        Transform spellTransform = Instantiate(SpellProjectile, e.wandTransform.position, Quaternion.Euler(2, 35, 0));
         castingAudio.volume = 0.8f;
         castingAudio.Play();
+       
     }
 
 
@@ -26,4 +27,6 @@ public class ProjectileCasting : MonoBehaviour
     {
 
     }
+
+
 }
