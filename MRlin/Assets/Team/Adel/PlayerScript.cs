@@ -18,14 +18,16 @@ public class PlayerScript : NetworkBehaviour
 
     TextMesh isPC;
 
+    
     [SyncVar(hook = nameof(updateNumClicks))]
-    int mouseClicks = 0;
+    public int mouseClicks = 0;
 
     void updateNumClicks(int Old, int New)
     {
         GameObject.Find("Counter").GetComponent<counter>().playerNetStates[netId].mouseNoClicks = mouseClicks;
         GameObject.Find("Counter").GetComponent<counter>().changeText(0, 0);
     }
+    
 
     // --- Commands ----------------- (Run on server, with data sent from this client)
 
@@ -51,7 +53,8 @@ public class PlayerScript : NetworkBehaviour
     {
 
         mouseClicks += 1;
-        GameObject.Find("Counter").GetComponent<counter>().playerNetStates[netId].mouseNoClicks = mouseClicks;
+        //GameObject.Find("Counter").GetComponent<counter>().playerNetStates[netId].mouseNoClicks = mouseClicks;
+        //GameObject.Find("Counter").GetComponent<counter>().playerNetStates[netId].mouseNoClicks += 1;
         GameObject.Find("Counter").GetComponent<counter>().mouseNoClicks += 1;
     }
 
@@ -72,6 +75,9 @@ public class PlayerScript : NetworkBehaviour
         //TextMesh tm = counter.GetComponentInChildren<TextMesh>();
 
         GameObject.Find("Counter").GetComponent<counter>().playerNetStates.Add(id, new PlayerNetState() { netId = id, type = type, mouseNoClicks= 0 });
+
+        NetworkIdentity.spawned.TryGetValue(id, out NetworkIdentity identity);
+        GameObject.Find("Counter").GetComponent<counter>().players.Add(id, identity.gameObject);
 
     }
 
@@ -131,7 +137,8 @@ public class PlayerScript : NetworkBehaviour
 
         CmdsetText(type);
         CmdAddPNS(netId, type);
-        
+        //GameObject.Find("Counter").GetComponent<counter>().players.Add(netId, netIdentity.gameObject);
+
     }
 
     // ------------------
@@ -147,6 +154,8 @@ public class PlayerScript : NetworkBehaviour
             isPC.text = type + " no local "+ netId;//type;
             return;
         }
+
+
 
     }
 
