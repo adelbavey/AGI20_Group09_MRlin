@@ -1,10 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
 using Mirror;
 using UnityEngine.UI;
-using System;
+//using System;
 
 /*
  Attached to player, primary script the user uses to interact with the game.
@@ -22,10 +23,19 @@ public class PlayerScript : NetworkBehaviour
     [SyncVar(hook = nameof(updateNumClicks))]
     public int mouseClicks = 0;
 
+    [SyncVar]
+    public Quaternion attitude = new Quaternion();
+
+    public GameObject castObject;
+
     void updateNumClicks(int Old, int New)
     {
-        GameObject.Find("Counter").GetComponent<counter>().playerNetStates[netId].mouseNoClicks = mouseClicks;
         GameObject.Find("Counter").GetComponent<counter>().changeText(0, 0);
+
+        //GameObject sphere = Instantiate("Sphere");
+
+        //NetworkServer.Spawn(sphere);
+        
     }
     
 
@@ -38,35 +48,33 @@ public class PlayerScript : NetworkBehaviour
         
     }
 
-    //OLD
-    [Command(ignoreAuthority = true)]
-    void CmdCounterPlus()
-    {
-        GameObject counter = GameObject.Find("Counter");
-        TextMesh tm = counter.GetComponentInChildren<TextMesh>();
-        tm.text = int.Parse(tm.text)+1+"";
-
-    }
-
     [Command(ignoreAuthority = true)]
     void CmdCounterMousePlus()
     {
+        /*
+        Guid g;
+        //Guid.TryParse(AssetDatabase.AssetPathToGUID("./Sphere"), out g);
+        Guid.TryParse(AssetDatabase.AssetPathToGUID("bbf4d4d7-7919-84f4-b990-966eef1e973d"), out g);
+        GameObject s = Instantiate(ClientScene.prefabs[g], new Vector3(0, 0, 0), Quaternion.identity);
+
+        NetworkServer.Spawn(s);
+        */
+
+        //GameObject s = Instantiate(castObject, new Vector3(Random.Range(-10.0f, 10.0f), Random.Range(-10.0f, 10.0f), Random.Range(-10.0f, 10.0f)), Quaternion.identity);
+
+        //NetworkServer.Spawn(s);
 
         mouseClicks += 1;
-        //GameObject.Find("Counter").GetComponent<counter>().playerNetStates[netId].mouseNoClicks = mouseClicks;
-        //GameObject.Find("Counter").GetComponent<counter>().playerNetStates[netId].mouseNoClicks += 1;
         GameObject.Find("Counter").GetComponent<counter>().mouseNoClicks += 1;
     }
 
-    //OLD
     [Command(ignoreAuthority = true)]
-    void CmdCounterMinus()
+    void CmdSetAttitude(Quaternion att)
     {
-        GameObject counter = GameObject.Find("Counter");
-        TextMesh tm = counter.GetComponentInChildren<TextMesh>();
-        tm.text = (int.Parse(tm.text) - 1) + "";
-
+        attitude = att;
+        GameObject.Find("Counter").GetComponent<counter>().changeText(0, 0);
     }
+
 
     [Command(ignoreAuthority = true)]
     void CmdAddPNS(uint id, string type)
@@ -74,10 +82,11 @@ public class PlayerScript : NetworkBehaviour
         //GameObject counter = GameObject.Find("Counter");
         //TextMesh tm = counter.GetComponentInChildren<TextMesh>();
 
-        GameObject.Find("Counter").GetComponent<counter>().playerNetStates.Add(id, new PlayerNetState() { netId = id, type = type, mouseNoClicks= 0 });
+        //GameObject.Find("Counter").GetComponent<counter>().playerNetStates.Add(id, new PlayerNetState() { netId = id, type = type, mouseNoClicks= 0 });
 
         NetworkIdentity.spawned.TryGetValue(id, out NetworkIdentity identity);
         GameObject.Find("Counter").GetComponent<counter>().players.Add(id, identity.gameObject);
+        GameObject.Find("Counter").GetComponent<counter>().playerIds.Add(id);
 
     }
 
@@ -119,6 +128,7 @@ public class PlayerScript : NetworkBehaviour
     public override void OnStartLocalPlayer()
     {
         // register client events, enable effects
+        Input.gyro.enabled = true;
 
         //Check if the device running this is a desktop
         if (SystemInfo.deviceType == DeviceType.Desktop)
@@ -132,6 +142,7 @@ public class PlayerScript : NetworkBehaviour
         {
 
             type = "Handheld";
+            
 
         }
 
@@ -172,6 +183,8 @@ public class PlayerScript : NetworkBehaviour
         if (Input.GetMouseButtonDown(0)) { 
             CmdCounterMousePlus();
         }
+
+        CmdSetAttitude(Input.gyro.attitude);
 
     }
 }

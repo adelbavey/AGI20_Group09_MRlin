@@ -127,6 +127,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7335921419323e4bb88298f825aa0d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  type: 
+  mouseClicks: 0
+  attitude: {x: 0, y: 0, z: 0, w: 0}
+  castObject: {fileID: 6817474306256458254, guid: bbf4d4d7791984f4b990966eef1e973d, type: 3}
 --- !u!1 &1268332348063832122
 GameObject:
   m_ObjectHideFlags: 0
@@ -317,6 +323,7 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 879259935113011572}
   m_maskType: 0
+  _SortingLayer: 0
   _SortingLayerID: 0
   _SortingOrder: 0
 --- !u!1 &7656964333440167656

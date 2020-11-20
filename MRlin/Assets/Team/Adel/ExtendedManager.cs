@@ -53,7 +53,7 @@ public class ExtendedManager : NetworkManager
         
         GameObject.Find("Counter").GetComponent<counter>().numOfPlayers -= 1;
 
-        GameObject.Find("Counter").GetComponent<counter>().playerNetStates.Remove(conn.identity.netId);
+        //GameObject.Find("Counter").GetComponent<counter>().playerNetStates.Remove(conn.identity.netId);
 
         GameObject.Find("Counter").GetComponent<counter>().players.Remove(conn.identity.netId);
 
