@@ -585,6 +585,7 @@ GameObject:
   - component: {fileID: 1234172014}
   - component: {fileID: 1234172013}
   - component: {fileID: 1234172017}
+  - component: {fileID: 1234172012}
   m_Layer: 0
   m_Name: Wand
   m_TagString: Untagged
@@ -592,6 +593,18 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &1234172012
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1234172011}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a59fa58e5875b44e951a7c8f2ad938a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!65 &1234172013
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -676,13 +689,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1234172011}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9b4f58acdb219564fb9a0b9da6e41227, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   cube: {fileID: 1234172011}
   speed: 2.52
+  alpha: 0.1
   cursor: {fileID: 56547350}
   wandTip: {fileID: 2079951812}
 --- !u!1 &1524389714
