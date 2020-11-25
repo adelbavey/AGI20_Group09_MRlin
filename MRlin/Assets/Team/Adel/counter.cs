@@ -32,7 +32,7 @@ public class counter : NetworkBehaviour
             "Num clicks: "+mouseNoClicks+"\n"+
             "-----------------" + "\n";
 
-        Debug.Log(netId + " :: "+ players.Count);
+        //Debug.Log(netId + " :: "+ players.Count);
         foreach (uint id in playerIds)
         {
             /*
@@ -50,6 +50,7 @@ public class counter : NetworkBehaviour
             "type: " + ps.type + "\n" +
             "mouseNoClicks: " + ps.mouseClicks + "\n" +
             "attitude: " + ps.attitude + "\n" +
+            "connected: " + ps.connectedPlayerId + "\n" +
             "-----------------" + "\n";
         }
         

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using UnityEngine.SceneManagement;
 
 using Mirror;
 using UnityEngine.UI;
@@ -27,6 +28,11 @@ public class PlayerScript : NetworkBehaviour
     public Quaternion attitude = new Quaternion();
 
     public GameObject castObject;
+
+    [SyncVar]
+    public uint connectedPlayerId = 0;
+
+    public GameObject connectedPlayer = null;
 
     void updateNumClicks(int Old, int New)
     {
@@ -84,9 +90,28 @@ public class PlayerScript : NetworkBehaviour
 
         //GameObject.Find("Counter").GetComponent<counter>().playerNetStates.Add(id, new PlayerNetState() { netId = id, type = type, mouseNoClicks= 0 });
 
-        NetworkIdentity.spawned.TryGetValue(id, out NetworkIdentity identity);
-        GameObject.Find("Counter").GetComponent<counter>().players.Add(id, identity.gameObject);
+        //Old
+        NetworkIdentity.spawned.TryGetValue(id, out NetworkIdentity thisIdentity);
+
+        //Old
+        GameObject.Find("Counter").GetComponent<counter>().players.Add(id, thisIdentity.gameObject);
+
+        foreach (uint fid in GameObject.Find("Counter").GetComponent<counter>().playerIds)
+        {
+            NetworkIdentity.spawned.TryGetValue(fid, out NetworkIdentity identity);
+            if(identity.gameObject.GetComponent<PlayerScript>().connectedPlayerId == 0 && !identity.gameObject.GetComponent<PlayerScript>().type.Equals(type))
+            {
+                identity.gameObject.GetComponent<PlayerScript>().connectedPlayerId = id;
+                connectedPlayerId = fid;
+                break;
+            }
+        }
+
+
         GameObject.Find("Counter").GetComponent<counter>().playerIds.Add(id);
+
+
+
 
     }
 
@@ -142,7 +167,9 @@ public class PlayerScript : NetworkBehaviour
         {
 
             type = "Handheld";
-            
+            SceneManager.LoadSceneAsync("PhoneScene", LoadSceneMode.Additive);
+            //SceneManager.MoveGameObjectToScene(player, "PhoneScene");
+
 
         }
 
@@ -150,7 +177,15 @@ public class PlayerScript : NetworkBehaviour
         CmdAddPNS(netId, type);
         //GameObject.Find("Counter").GetComponent<counter>().players.Add(netId, netIdentity.gameObject);
 
+        if(connectedPlayerId !=0)
+        {
+            NetworkIdentity.spawned.TryGetValue(connectedPlayerId, out NetworkIdentity Identity);
+            connectedPlayer = Identity.gameObject;
+        }
+        
+
     }
+
 
     // ------------------
 
@@ -166,6 +201,7 @@ public class PlayerScript : NetworkBehaviour
             return;
         }
 
+        
 
 
     }
@@ -183,6 +219,7 @@ public class PlayerScript : NetworkBehaviour
         if (Input.GetMouseButtonDown(0)) { 
             CmdCounterMousePlus();
         }
+
 
         CmdSetAttitude(Input.gyro.attitude);
 
