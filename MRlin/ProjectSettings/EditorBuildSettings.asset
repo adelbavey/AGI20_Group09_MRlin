@@ -11,4 +11,45 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Team/Adel/PhoneScene.unity
     guid: aa446f0654ba4d5418ab2ac990c094ff
-  m_configObjects: {}
+  - enabled: 0
+    path: 
+    guid: 00000000000000000000000000000000
+  - enabled: 0
+    path: 
+    guid: 00000000000000000000000000000000
+  - enabled: 0
+    path: Assets/Legacy/Mirror/Examples/Basic/Scenes/Example.unity
+    guid: b30904751905d3f4dacde62ac85ec7c2
+  - enabled: 0
+    path: Assets/Legacy/Mirror/Examples/Pong/Scenes/Scene.unity
+    guid: 89a84548859e3b643b4fb27984dc2b0d
+  - enabled: 0
+    path: Assets/Legacy/CubeNetworkTest/NetCubeTest.unity
+    guid: cec7eb823fe01b94f8f098c965457511
+  - enabled: 0
+    path: Assets/Legacy/ANS/ANS.unity
+    guid: d664278196260b248859ed4779e28646
+  - enabled: 0
+    path: Assets/Team/Jaime/UI/PcApp/Scenes/Scene 1. Startup screen/1. Startup screen
+      1.unity
+    guid: 190f13f8a6afea547b3fb83c34637a39
+  - enabled: 0
+    path: 
+    guid: 00000000000000000000000000000000
+  - enabled: 0
+    path: Assets/Team/Alejandro/Scenes/Gyro Test.unity
+    guid: 6f16215c4c72d4e439d58d27a9c10ec1
+  - enabled: 0
+    path: Assets/Team/Jaime/NetworkTest/NetworkTesting.unity
+    guid: fd00b4608e110004fb4e4af7c945fdaf
+  - enabled: 0
+    path: Assets/Team/Jaime/NetworkTest/PhoneApp/1. Home screen 1.unity
+    guid: 3dabee98f0e57dd4fa9ec059b464d1bd
+  - enabled: 0
+    path: Assets/Team/Jaime/NetworkTest/PhoneApp/2. ConnectingScreen.unity
+    guid: 794004397af8ec34ca2d842d5174c9ee
+  - enabled: 1
+    path: Assets/Team/Yufei/Scenes/Interaction Testing 1.unity
+    guid: 25b9715909c1a5940968f29676602e65
+  m_configObjects:
+    com.unity.input.settings: {fileID: 11400000, guid: 904ead38780c3164889001d56448b55c, type: 2}
