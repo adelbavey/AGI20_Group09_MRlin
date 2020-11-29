@@ -50,7 +50,8 @@ public class counter : NetworkBehaviour
             "type: " + ps.type + "\n" +
             "mouseNoClicks: " + ps.mouseClicks + "\n" +
             "attitude: " + ps.attitude + "\n" +
-            "connected: " + ps.connectedPlayerId + "\n" +
+            "connected id: " + ps.connectedPlayerId + "\n" +
+            "opponent id: " + ps.opponentPlayerId + "\n" +
             "-----------------" + "\n";
         }
         

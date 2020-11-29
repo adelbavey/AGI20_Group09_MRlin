@@ -29,10 +29,31 @@ public class PlayerScript : NetworkBehaviour
 
     public GameObject castObject;
 
-    [SyncVar]
+    //Phone/Desktop connection-------------------------------
+    [SyncVar(hook = nameof(cpid))]
     public uint connectedPlayerId = 0;
 
     public GameObject connectedPlayer = null;
+
+    void cpid(uint Old, uint New)
+    {
+        NetworkIdentity.spawned.TryGetValue(New, out NetworkIdentity Identity);
+        connectedPlayer = Identity.gameObject;
+    }
+    //-------------
+
+    //Opponent connection--------------------------
+    [SyncVar(hook = nameof(opid))]
+    public uint opponentPlayerId = 0;
+
+    public GameObject opponentPlayer = null;
+
+    void opid(uint Old, uint New)
+    {
+        NetworkIdentity.spawned.TryGetValue(New, out NetworkIdentity Identity);
+        opponentPlayer = Identity.gameObject;
+    }
+    //------------------
 
     void updateNumClicks(int Old, int New)
     {
@@ -67,8 +88,12 @@ public class PlayerScript : NetworkBehaviour
         */
 
         //GameObject s = Instantiate(castObject, new Vector3(Random.Range(-10.0f, 10.0f), Random.Range(-10.0f, 10.0f), Random.Range(-10.0f, 10.0f)), Quaternion.identity);
+        //GameObject s = Instantiate(castObject, this.transform.position + new Vector3(Random.Range(-5.0f, 5.0f), Random.Range(-5.0f, 5.0f), Random.Range(-5.0f, 5.0f)), Quaternion.identity);
+        GameObject s = Instantiate(castObject, (opponentPlayer.transform.position - transform.position).normalized + transform.position, Quaternion.identity);
+        s.GetComponent<Rigidbody>().velocity = opponentPlayer.transform.position - s.transform.position;
 
-        //NetworkServer.Spawn(s);
+
+        NetworkServer.Spawn(s);
 
         mouseClicks += 1;
         GameObject.Find("Counter").GetComponent<counter>().mouseNoClicks += 1;
@@ -96,13 +121,34 @@ public class PlayerScript : NetworkBehaviour
         //Old
         GameObject.Find("Counter").GetComponent<counter>().players.Add(id, thisIdentity.gameObject);
 
+        bool isPhone = type.Contains("Handheld");
+
+        // For phone/desktop
         foreach (uint fid in GameObject.Find("Counter").GetComponent<counter>().playerIds)
         {
             NetworkIdentity.spawned.TryGetValue(fid, out NetworkIdentity identity);
-            if(identity.gameObject.GetComponent<PlayerScript>().connectedPlayerId == 0 && !identity.gameObject.GetComponent<PlayerScript>().type.Equals(type))
+            bool otherIsPhone = identity.gameObject.GetComponent<PlayerScript>().type.Contains("Handheld");
+
+            
+            if(identity.gameObject.GetComponent<PlayerScript>().connectedPlayerId == 0 && isPhone != otherIsPhone)
             {
                 identity.gameObject.GetComponent<PlayerScript>().connectedPlayerId = id;
                 connectedPlayerId = fid;
+                break;
+            }
+        }
+
+        // For opponent
+        foreach (uint fid in GameObject.Find("Counter").GetComponent<counter>().playerIds)
+        {
+            NetworkIdentity.spawned.TryGetValue(fid, out NetworkIdentity identity);
+            bool otherIsPhone = identity.gameObject.GetComponent<PlayerScript>().type.Contains("Handheld");
+
+
+            if (identity.gameObject.GetComponent<PlayerScript>().opponentPlayerId == 0 && isPhone == otherIsPhone)
+            {
+                identity.gameObject.GetComponent<PlayerScript>().opponentPlayerId = id;
+                opponentPlayerId = fid;
                 break;
             }
         }
@@ -154,6 +200,7 @@ public class PlayerScript : NetworkBehaviour
     {
         // register client events, enable effects
         Input.gyro.enabled = true;
+        opponentPlayer = GameObject.Find("testTargetSphere");
 
         //Check if the device running this is a desktop
         if (SystemInfo.deviceType == DeviceType.Desktop)
@@ -177,11 +224,13 @@ public class PlayerScript : NetworkBehaviour
         CmdAddPNS(netId, type);
         //GameObject.Find("Counter").GetComponent<counter>().players.Add(netId, netIdentity.gameObject);
 
+        /*
         if(connectedPlayerId !=0)
         {
             NetworkIdentity.spawned.TryGetValue(connectedPlayerId, out NetworkIdentity Identity);
             connectedPlayer = Identity.gameObject;
         }
+        */
         
 
     }
@@ -216,7 +265,9 @@ public class PlayerScript : NetworkBehaviour
         }
 
         // Register mouse down
-        if (Input.GetMouseButtonDown(0)) { 
+        if (Input.GetMouseButtonDown(0)) {
+            //if(type.Contains("Handheld") && connectedPlayer != null)
+            //    connectedPlayer.GetComponent<PlayerScript>().CmdCounterMousePlus();
             CmdCounterMousePlus();
         }
 
