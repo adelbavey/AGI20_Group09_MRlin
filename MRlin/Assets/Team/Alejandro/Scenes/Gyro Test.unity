@@ -584,7 +584,6 @@ GameObject:
   - component: {fileID: 1234172015}
   - component: {fileID: 1234172014}
   - component: {fileID: 1234172013}
-  - component: {fileID: 1234172017}
   - component: {fileID: 1234172012}
   m_Layer: 0
   m_Name: Wand
@@ -605,6 +604,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a59fa58e5875b44e951a7c8f2ad938a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  alpha: 0.1
 --- !u!65 &1234172013
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -637,7 +637,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 7e56b6e37c078ed47b6d0e9d9249ea9f, type: 2}
+  - {fileID: 2100000, guid: 8d451e3f8ec527746be5c5cba7f5b9b4, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -682,23 +682,6 @@ Transform:
   m_Father: {fileID: 1524389715}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1234172017
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1234172011}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b4f58acdb219564fb9a0b9da6e41227, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cube: {fileID: 1234172011}
-  speed: 2.52
-  alpha: 0.1
-  cursor: {fileID: 56547350}
-  wandTip: {fileID: 2079951812}
 --- !u!1 &1524389714
 GameObject:
   m_ObjectHideFlags: 0
