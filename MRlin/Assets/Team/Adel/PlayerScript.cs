@@ -20,7 +20,10 @@ public class PlayerScript : NetworkBehaviour
 
     TextMesh isPC;
 
-    
+    public GameObject canvasPre;
+    GameObject canvas;
+
+
     [SyncVar(hook = nameof(updateNumClicks))]
     public int mouseClicks = 0;
 
@@ -97,6 +100,41 @@ public class PlayerScript : NetworkBehaviour
 
         mouseClicks += 1;
         GameObject.Find("Counter").GetComponent<counter>().mouseNoClicks += 1;
+    }
+
+    [Command(ignoreAuthority = true)]
+    public void CmdSpellCast(int spellNo)
+    {
+        GameObject s;
+
+        if(spellNo == 1)
+        {
+            s = Instantiate(castObject, (opponentPlayer.transform.position - transform.position).normalized + transform.position, Quaternion.identity);
+            s.GetComponent<Renderer>().material.SetColor("_Color", Color.red);
+        }
+        else if(spellNo == 2)
+        {
+            s = Instantiate(castObject, (opponentPlayer.transform.position - transform.position).normalized + transform.position, Quaternion.identity);
+            s.GetComponent<Renderer>().material.SetColor("_Color", Color.blue);
+        }
+        else if(spellNo == 3)
+        {
+            s = Instantiate(castObject, (opponentPlayer.transform.position - transform.position).normalized + transform.position, Quaternion.identity);
+            s.GetComponent<Renderer>().material.SetColor("_Color", Color.green);
+        }
+        else
+        {
+            s = Instantiate(castObject, (opponentPlayer.transform.position - transform.position).normalized + transform.position, Quaternion.identity);
+        }
+
+
+        //GameObject s = Instantiate(castObject, new Vector3(Random.Range(-10.0f, 10.0f), Random.Range(-10.0f, 10.0f), Random.Range(-10.0f, 10.0f)), Quaternion.identity);
+        //GameObject s = Instantiate(castObject, this.transform.position + new Vector3(Random.Range(-5.0f, 5.0f), Random.Range(-5.0f, 5.0f), Random.Range(-5.0f, 5.0f)), Quaternion.identity);
+        //GameObject s = Instantiate(castObject, (opponentPlayer.transform.position - transform.position).normalized + transform.position, Quaternion.identity);
+        s.GetComponent<Rigidbody>().velocity = opponentPlayer.transform.position - s.transform.position;
+
+
+        NetworkServer.Spawn(s);
     }
 
     [Command(ignoreAuthority = true)]
@@ -214,8 +252,55 @@ public class PlayerScript : NetworkBehaviour
         {
 
             type = "Handheld";
-            SceneManager.LoadSceneAsync("PhoneScene", LoadSceneMode.Additive);
+            //SceneManager.LoadScene("PhoneScene", LoadSceneMode.Additive);
+            //canvas = GameObject.Find("PlayerCanvas");
+            //((Canvas)canvas.GetComponent("Canvas")).enabled = true;
+
+            //(canvas.transform.GetChild(1).gameObject.GetComponent<Button>()).onClick.AddListener(() => Debug.Log("You have clicked the button!"));
+
+            /*
+            Button[] buttons = GameObject.Find("PlayerCanvas").GetComponentsInChildren<Button>();
+
+
+            foreach (Button but in buttons)
+            {
+                if (but.gameObject.name == "Button1")
+                    but.onClick.AddListener(() => CmdSpellCast(1));
+                else if (but.gameObject.name == "Button2")
+                    but.onClick.AddListener(() => CmdSpellCast(2));
+            }
+            */
+
             //SceneManager.MoveGameObjectToScene(player, "PhoneScene");
+
+            canvas = Instantiate(canvasPre);
+            
+            Button[] buttons = canvas.GetComponentsInChildren<Button>();
+
+
+            foreach (Button but in buttons)
+            {
+                Debug.Log("fDSFASDFDS");
+                if (but.gameObject.name == "Button1")
+                {
+                    Debug.Log("Button1");
+                    but.onClick.AddListener(delegate { if (connectedPlayerId != 0) connectedPlayer.GetComponent<PlayerScript>().CmdSpellCast(1); else CmdSpellCast(1); });
+                }
+                    
+                else if (but.gameObject.name == "Button2")
+                {
+                    Debug.Log("Button2");
+                    but.onClick.AddListener(delegate { if (connectedPlayerId != 0) connectedPlayer.GetComponent<PlayerScript>().CmdSpellCast(2); else CmdSpellCast(2); });
+                }
+
+                else if (but.gameObject.name == "Button3")
+                {
+                    Debug.Log("Button2");
+                    but.onClick.AddListener(delegate { if (connectedPlayerId != 0) connectedPlayer.GetComponent<PlayerScript>().CmdSpellCast(3); else CmdSpellCast(3); });
+                }
+
+            }
+            
 
 
         }
@@ -265,14 +350,49 @@ public class PlayerScript : NetworkBehaviour
         }
 
         // Register mouse down
+        
         if (Input.GetMouseButtonDown(0)) {
             //if(type.Contains("Handheld") && connectedPlayer != null)
             //    connectedPlayer.GetComponent<PlayerScript>().CmdCounterMousePlus();
-            CmdCounterMousePlus();
+            //else CmdCounterMousePlus();
         }
+        
+
+        if (Input.GetKeyDown(KeyCode.Z))
+            CmdSpellCast(1);
+
+        if (Input.GetKeyDown(KeyCode.X))
+            CmdSpellCast(2);
+
+        if (Input.GetKeyDown(KeyCode.C))
+            CmdSpellCast(3);
+
+        /*
+        if(((Canvas)canvas.GetComponent("Canvas")).enabled == true)
+        {
+            if(canvas.GetComponent("Button1"))
+        }
+        */
 
 
         CmdSetAttitude(Input.gyro.attitude);
+
+    }
+
+    // Collision --------------------------------------
+
+    void OnCollisionEnter(Collision collision)
+    {
+
+        foreach (ContactPoint contact in collision.contacts)
+        {
+            Debug.DrawRay(contact.point, contact.normal * 5, Color.white);
+        }
+        /*
+        if (collision.relativeVelocity.magnitude > 2)
+            audioSource.Play();
+        */
+
 
     }
 }

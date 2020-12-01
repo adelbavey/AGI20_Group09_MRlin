@@ -130,9 +130,14 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   type: 
+  canvasPre: {fileID: 7461446107837595414, guid: cd524666f5c7afe43a8d26c6a7908d61, type: 3}
   mouseClicks: 0
   attitude: {x: 0, y: 0, z: 0, w: 0}
   castObject: {fileID: 6817474306256458254, guid: bbf4d4d7791984f4b990966eef1e973d, type: 3}
+  connectedPlayerId: 0
+  connectedPlayer: {fileID: 0}
+  opponentPlayerId: 0
+  opponentPlayer: {fileID: 0}
 --- !u!1 &1268332348063832122
 GameObject:
   m_ObjectHideFlags: 0
