@@ -5,7 +5,10 @@ using UnityEngine;
 
 using Mirror;
 
-public class SyncDictionaryStates : SyncDictionary<uint, PlayerNetState> { };
+public class playerList : SyncList<GameObject> { };
+public class uintList : SyncList<uint> { };
+
+public class playersDict : SyncDictionary<uint, GameObject> { };
 
 /*
  Currently used as a centralized and synchronized class for accessing certain states of the networked game.
@@ -19,32 +22,53 @@ public class counter : NetworkBehaviour
     [SyncVar(hook = nameof(changeText))]
     public int mouseNoClicks = 0;
 
-    //public List<PlayerNetState> playerNetStates = new List<PlayerNetState>();
-    //public readonly SyncDictionary<string, string> playerNetStates = new SyncDictionary<string, string>();
-    
-    //Dictionary between netids and the corresponding player state, that different clients can poll.
-    public SyncDictionaryStates playerNetStates = new SyncDictionaryStates();
+    public playersDict players = new playersDict();
+    public uintList playerIds = new uintList();
 
     public void changeText(int oldval, int newval)
     {
-        TextMesh counterComp = GetComponentInChildren<TextMesh>();
+        TextMesh counterComp = GetComponentInChildren<TextMesh>(); 
         counterComp.text = "Num players: "+ numOfPlayers+"\n"+ 
             "Num clicks: "+mouseNoClicks+"\n"+
             "-----------------" + "\n";
 
-        foreach (KeyValuePair<uint, PlayerNetState> pns in playerNetStates)
+        //Debug.Log(netId + " :: "+ players.Count);
+        foreach (uint id in playerIds)
         {
+            /*
             counterComp.text += pns.Value +"\n" +
+            "-----------------" + "\n";
+            */
+
+            //NetworkIdentity.spawned.TryGetValue(pns.Key, out NetworkIdentity identity);
+            NetworkIdentity.spawned.TryGetValue(id, out NetworkIdentity identity);
+            PlayerScript ps = identity.gameObject.GetComponentInChildren<PlayerScript>();
+            //PlayerScript ps = pns.Value.GetComponentInChildren<PlayerScript>();
+            //Debug.Log(netId + " :: "+ps.netId);
+
+            counterComp.text += "netId: " + ps.netId + "\n" +
+            "type: " + ps.type + "\n" +
+            "mouseNoClicks: " + ps.mouseClicks + "\n" +
+            "attitude: " + ps.attitude + "\n" +
+            "connected: " + ps.connectedPlayerId + "\n" +
             "-----------------" + "\n";
         }
         
     }
 
     //When something is added/removed from PNS, this is called. Function name borrowd from Mirror docs, will change later.
-    void OnEquipmentChange(SyncDictionary<uint, PlayerNetState>.Operation op, uint key, PlayerNetState item)
+    void OnEquipmentChange2(SyncDictionary<uint, GameObject>.Operation op, uint key, GameObject item)
     {
         // equipment changed,  perhaps update the gameobject
         Debug.Log(op + " - " + key);
+        changeText(0, 0);
+    }
+
+    //When something is added/removed from PNS, this is called. Function name borrowd from Mirror docs, will change later.
+    void OnEquipmentChange3(SyncList<uint>.Operation op, int index, uint oldItem, uint newItem)
+    {
+        // equipment changed,  perhaps update the gameobject
+        Debug.Log(op + " - " + index);
         changeText(0, 0);
     }
 
@@ -54,7 +78,8 @@ public class counter : NetworkBehaviour
         TextMesh counterComp = GetComponentInChildren<TextMesh>();
         counterComp.text = numOfPlayers+"";
 
-        playerNetStates.Callback += OnEquipmentChange;
+        players.Callback += OnEquipmentChange2;
+        playerIds.Callback += OnEquipmentChange3;
     }
 
     // Update is called once per frame
