@@ -40,7 +40,7 @@ VisualEffect:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5543014017812640258}
   m_Enabled: 1
-  m_Asset: {fileID: 8926484042661614526, guid: 7c0ae68cece99c74e98caa455060a17f, type: 3}
+  m_Asset: {fileID: 8926484042661614526, guid: 0f7d2f7ddc43af54abedfdb18650bc18, type: 3}
   m_InitialEventName: OnPlay
   m_InitialEventNameOverriden: 0
   m_StartSeed: 0
@@ -48,7 +48,7 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 11
+      - m_Value: 8.5
         m_Name: Distance
         m_Overridden: 1
     m_Vector2f:
@@ -66,7 +66,38 @@ VisualEffect:
     m_AnimationCurve:
       m_Array: []
     m_Gradient:
-      m_Array: []
+      m_Array:
+      - m_Value:
+          serializedVersion: 2
+          key0: {r: 0.004339915, g: 0, b: 0.14150941, a: 0}
+          key1: {r: 0.055567015, g: 0, b: 0.7490196, a: 0.7607843}
+          key2: {r: 0, g: 0.23211874, b: 2.7709174, a: 1}
+          key3: {r: 0, g: 1.1769668, b: 4.4082775, a: 0}
+          key4: {r: 0, g: 1.5633204, b: 2.0235872, a: 0}
+          key5: {r: 0, g: 0, b: 0, a: 0}
+          key6: {r: 0, g: 0, b: 0, a: 0}
+          key7: {r: 0, g: 0, b: 0, a: 0}
+          ctime0: 0
+          ctime1: 19661
+          ctime2: 39514
+          ctime3: 54934
+          ctime4: 65535
+          ctime5: 0
+          ctime6: 0
+          ctime7: 0
+          atime0: 0
+          atime1: 45875
+          atime2: 65535
+          atime3: 0
+          atime4: 0
+          atime5: 0
+          atime6: 0
+          atime7: 0
+          m_Mode: 0
+          m_NumColorKeys: 5
+          m_NumAlphaKeys: 3
+        m_Name: Fire Gradient
+        m_Overridden: 0
     m_NamedObject:
       m_Array:
       - m_Value: {fileID: 2800000, guid: 4ef4b60650b25824a922b7aedc121188, type: 3}
