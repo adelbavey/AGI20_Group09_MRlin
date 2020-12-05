@@ -16,6 +16,7 @@ TagManager:
   - 
   - 
   - MouseTarget
+  - SecondCam
   - 
   - 
   - 
@@ -31,9 +32,8 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
-  - 
+  - Fruits
+  - FruitsSlice
   - 
   - 
   - 
