@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 
 using Mirror;
 using UnityEngine.UI;
@@ -30,6 +31,16 @@ public class PlayerScript : NetworkBehaviour
     [SyncVar]
     public Quaternion attitude = new Quaternion();
 
+    [SyncVar(hook=nameof(updateDrawHeld))]
+    public bool drawHeld = false;
+
+    //
+    void updateDrawHeld(bool Old, bool New)
+    {
+        GameObject.Find("Counter").GetComponent<counter>().changeText(0, 0);
+    }
+    //
+
     public GameObject castObject;
 
     //Phone/Desktop connection-------------------------------
@@ -55,6 +66,7 @@ public class PlayerScript : NetworkBehaviour
     {
         NetworkIdentity.spawned.TryGetValue(New, out NetworkIdentity Identity);
         opponentPlayer = Identity.gameObject;
+        //if (opponentPlayer.transform.position == GameObject.Find("pos1").transform.position) CmdMoveTo(GameObject.Find("pos2").transform.position);
     }
     //------------------
 
@@ -67,9 +79,16 @@ public class PlayerScript : NetworkBehaviour
         //NetworkServer.Spawn(sphere);
         
     }
-    
+
 
     // --- Commands ----------------- (Run on server, with data sent from this client)
+
+    [Command(ignoreAuthority = true)]
+    public void CmdsetIsHeld(bool b)
+    {
+        drawHeld = b;
+        if (connectedPlayerId != 0) connectedPlayer.GetComponent<PlayerScript>().drawHeld = b;
+    }
 
     [Command(ignoreAuthority = true)]
     void CmdsetText(string ty)
@@ -110,17 +129,20 @@ public class PlayerScript : NetworkBehaviour
         if(spellNo == 1)
         {
             s = Instantiate(castObject, (opponentPlayer.transform.position - transform.position).normalized + transform.position, Quaternion.identity);
-            s.GetComponent<Renderer>().material.SetColor("_Color", Color.red);
+            //s.GetComponent<Renderer>().material.SetColor("_Color", Color.red);
+            s.GetComponent<SpellScript>().color = Color.red;
         }
         else if(spellNo == 2)
         {
             s = Instantiate(castObject, (opponentPlayer.transform.position - transform.position).normalized + transform.position, Quaternion.identity);
-            s.GetComponent<Renderer>().material.SetColor("_Color", Color.blue);
+            //s.GetComponent<Renderer>().material.SetColor("_Color", Color.blue);
+            s.GetComponent<SpellScript>().color = Color.blue;
         }
         else if(spellNo == 3)
         {
             s = Instantiate(castObject, (opponentPlayer.transform.position - transform.position).normalized + transform.position, Quaternion.identity);
-            s.GetComponent<Renderer>().material.SetColor("_Color", Color.green);
+            //s.GetComponent<Renderer>().material.SetColor("_Color", Color.green);
+            s.GetComponent<SpellScript>().color = Color.green;
         }
         else
         {
@@ -239,18 +261,21 @@ public class PlayerScript : NetworkBehaviour
         // register client events, enable effects
         Input.gyro.enabled = true;
         opponentPlayer = GameObject.Find("testTargetSphere");
+        
 
         //Check if the device running this is a desktop
         if (SystemInfo.deviceType == DeviceType.Desktop)
         {
             type = "Desktop";
+            if (GameObject.Find("pos1").GetComponent<Occupied>().occupied == false) CmdMoveTo("pos1");
+            else CmdMoveTo("pos2");
 
         }
 
         //Check if the device running this is a handheld
         if (SystemInfo.deviceType == DeviceType.Handheld)
         {
-
+            CmdMoveTo("posPhone");
             type = "Handheld";
             //SceneManager.LoadScene("PhoneScene", LoadSceneMode.Additive);
             //canvas = GameObject.Find("PlayerCanvas");
@@ -295,18 +320,38 @@ public class PlayerScript : NetworkBehaviour
 
                 else if (but.gameObject.name == "Button3")
                 {
-                    Debug.Log("Button2");
+                    Debug.Log("Button3");
                     but.onClick.AddListener(delegate { if (connectedPlayerId != 0) connectedPlayer.GetComponent<PlayerScript>().CmdSpellCast(3); else CmdSpellCast(3); });
                 }
 
             }
-            
+
+            //Ref button to this object
+            canvas.GetComponentInChildren<HoldButtonScript>().PhonePlayer = this.gameObject;
+            canvas.GetComponentInChildren<HoldButtonScript>().ps = this;
+
+            //Event add
+            EventTrigger trigger = canvas.GetComponentInChildren<EventTrigger>();
+
+            EventTrigger.Entry entry = new EventTrigger.Entry();
+            entry.eventID = EventTriggerType.PointerDown;
+            entry.callback.AddListener((data) => { CmdsetIsHeld(true); });
+            trigger.triggers.Add(entry);
+
+            EventTrigger.Entry entry2 = new EventTrigger.Entry();
+            entry2.eventID = EventTriggerType.PointerUp;
+            entry2.callback.AddListener((data) => { CmdsetIsHeld(false); });
+            trigger.triggers.Add(entry2);
+
 
 
         }
 
         CmdsetText(type);
         CmdAddPNS(netId, type);
+
+        //if (opponentPlayerId == 0) CmdMoveTo(GameObject.Find("pos1").transform.position);//this.transform.position = GameObject.Find("pos1").transform.position;
+        //else CmdMoveTo(GameObject.Find("pos2").transform.position);//this.transform.position = GameObject.Find("pos2").transform.position;
         //GameObject.Find("Counter").GetComponent<counter>().players.Add(netId, netIdentity.gameObject);
 
         /*
@@ -316,8 +361,16 @@ public class PlayerScript : NetworkBehaviour
             connectedPlayer = Identity.gameObject;
         }
         */
-        
 
+
+    }
+
+    [Command]
+    void CmdMoveTo(string pos)
+    {
+
+        this.transform.position = GameObject.Find(pos).transform.position;
+        GameObject.Find(pos).GetComponent<Occupied>().occupied = true;
     }
 
 

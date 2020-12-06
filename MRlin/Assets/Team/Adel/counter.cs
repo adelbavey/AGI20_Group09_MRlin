@@ -52,6 +52,7 @@ public class counter : NetworkBehaviour
             "attitude: " + ps.attitude + "\n" +
             "connected id: " + ps.connectedPlayerId + "\n" +
             "opponent id: " + ps.opponentPlayerId + "\n" +
+            "held button: " + ps.drawHeld + "\n" +
             "-----------------" + "\n";
         }
         

@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 5791102666779082601}
   - component: {fileID: -2383090572308071262}
   - component: {fileID: 180259174949424457}
+  - component: {fileID: 3335844207472742573}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -133,11 +134,30 @@ MonoBehaviour:
   canvasPre: {fileID: 7461446107837595414, guid: cd524666f5c7afe43a8d26c6a7908d61, type: 3}
   mouseClicks: 0
   attitude: {x: 0, y: 0, z: 0, w: 0}
+  drawHeld: 0
   castObject: {fileID: 6817474306256458254, guid: bbf4d4d7791984f4b990966eef1e973d, type: 3}
   connectedPlayerId: 0
   connectedPlayer: {fileID: 0}
   opponentPlayerId: 0
   opponentPlayer: {fileID: 0}
+--- !u!114 &3335844207472742573
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 68802931164955305}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  clientAuthority: 0
+  localPositionSensitivity: 0.01
+  localRotationSensitivity: 0.01
+  localScaleSensitivity: 0.01
 --- !u!1 &1268332348063832122
 GameObject:
   m_ObjectHideFlags: 0

@@ -31,10 +31,13 @@ public class ExtendedManager : NetworkManager
     {
         //base.OnServerAddPlayer(conn);
         //--- from source
+        /*
         Transform startPos = GetStartPosition();
         GameObject player = startPos != null
             ? Instantiate(playerPrefab, startPos.position, startPos.rotation)
             : Instantiate(playerPrefab);
+        */
+        GameObject player = Instantiate(playerPrefab);
 
         NetworkServer.AddPlayerForConnection(conn, player);
         //---
