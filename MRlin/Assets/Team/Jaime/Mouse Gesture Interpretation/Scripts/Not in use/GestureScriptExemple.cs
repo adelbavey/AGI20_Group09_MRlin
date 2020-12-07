@@ -43,8 +43,8 @@ public class GestureScriptExemple : MonoBehaviour {
             Debug.LogError("<b>GestureScript:</b> The code need a reference to the object that has the playerInput script");
             return;
         }
-		player.GetComponent<GesturePlayer.PlayerInput> ().setTextureG (text);
-        player.GetComponent<GesturePlayer.PlayerInput>().setCorrectRate(0.7f);
+		player.GetComponent<PlayerInput>().setTextureO(text);
+        player.GetComponent<PlayerInput>().setCorrectRate(0.7f);
 	}
 
     //This method happen when the player look to the object and can be used for a variety of things, in this example we use to display the Pattern
@@ -56,8 +56,8 @@ public class GestureScriptExemple : MonoBehaviour {
         }
 		else if (timer > 0.0f) {
 			iniCount = true;
-			image.GetComponent<RawImage> ().texture = display;
-			image.GetComponent<RawImage> ().enabled = true;
+			image.GetComponent<RawImage>().texture = display;
+			image.GetComponent<RawImage>().enabled = true;
 		}
 	}
 

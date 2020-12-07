@@ -279,7 +279,7 @@ namespace OpenCVForUnityExample
             if (measurement != null)
                 measurement.Dispose ();
 
-            KF.Dispose ();
+            KF.Dispose();
         }
 
         /// <summary>
