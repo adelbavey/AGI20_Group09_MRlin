@@ -1,92 +1,59 @@
-﻿
-using UnityEngine;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
-using System;
+using UnityEngine;
 
-public class GyroController : MonoBehaviour 
+public class oldThings : MonoBehaviour
 {
 
-    [SerializeField]
-    public float alpha = 0.1f;
-    private bool gyroEnabled; 
-    private UnityEngine.Gyroscope gyro;
-    private GameObject GyroControl;
-    private Quaternion rot;
-
-	private Quaternion initAttitude;
-	private Quaternion initRot;
-
-    // Smooth slerp factor
-    private const float lowPassFilterFactor = 0.2f;
-
+    
     // Kalman Filter variables
-        int sleep_time = 100;
+    int sleep_time = 100;
 
-        // Initialise matrices and variables
-        float[,] C = new float[2, 4] { { 1, 0, 0, 0 }, { 0, 0, 1, 0 } };
-        float[,] P = new float[4, 4] { { 1, 0, 0, 0 }, { 0, 1, 0, 0 }, { 0, 0, 1, 0 }, { 0, 0, 0, 1 } };
-        float[,] Q = new float[4, 4] { { 1, 0, 0, 0 }, { 0, 1, 0, 0 }, { 0, 0, 1, 0 }, { 0, 0, 0, 1 } };
-        float[,] R = new float[2, 2] { { 1, 0 }, { 0, 1 } };
-        float[,] identity4 = new float[4, 4] { { 1, 0, 0, 0 }, { 0, 1, 0, 0 }, { 0, 0, 1, 0 }, { 0, 0, 0, 1 } };
+    int ITERATION_NUMBER = 100;
 
-        float[,] state_estimate = new float[4, 1] { { 0 }, { 0 }, { 0 }, { 0 } };
+    // Initialise matrices and variables
+    float[,] C = new float[2, 4] { { 1, 0, 0, 0 }, { 0, 0, 1, 0 } };
+    float[,] P = new float[4, 4] { { 1, 0, 0, 0 }, { 0, 1, 0, 0 }, { 0, 0, 1, 0 }, { 0, 0, 0, 1 } };
+    float[,] Q = new float[4, 4] { { 1, 0, 0, 0 }, { 0, 1, 0, 0 }, { 0, 0, 1, 0 }, { 0, 0, 0, 1 } };
+    float[,] R = new float[2, 2] { { 1, 0 }, { 0, 1 } };
+    float[,] identity4 = new float[4, 4] { { 1, 0, 0, 0 }, { 0, 1, 0, 0 }, { 0, 0, 1, 0 }, { 0, 0, 0, 1 } };
 
-        float phi_hat = 0.0f;
-        float theta_hat = 0.0f;
+    float[,] state_estimate = new float[4, 1] { { 0 }, { 0 }, { 0 }, { 0 } };
 
-        // Calculate accelerometer offsets
-        int N = 100;
-        float phi_offset = 0.0f;
-        float theta_offset = 0.0f;
+    float phi_hat = 0.0f;
+    float theta_hat = 0.0f;
 
-        // Measured sampling time
-        float dt = 0.0f;
-        float start_time;
+    // Calculate accelerometer offsets
+    int N = 100;
+    float phi_offset = 0.0f;
+    float theta_offset = 0.0f;
 
-        float phi_acc;
-        float theta_acc;
+    // Measured sampling time
+    float dt = 0.0f;
+    float start_time;
 
+    float phi_acc;
+    float theta_acc;
 
+    float bx, by, bz;
 
-    private void Start()
-     {
-        Screen.sleepTimeout = SleepTimeout.NeverSleep;
- 
-        gyroEnabled = EnableGyro();
+    private Gyroscope gyro;
 
-        initKalmanFilter();
-     }
+    // Start is called before the first frame update
+    void Start()
+    {
+        
+    }
 
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
 
-     private bool EnableGyro()
-     {
-         if (SystemInfo.supportsGyroscope)
-         {
-            gyro = Input.gyro;
-            gyro.enabled = true;
-
-			initAttitude = gyro.attitude;
-			initRot = transform.rotation;
-            return true;
-         }
-         return false;
-     }
-
-
-
-     private void Update()
-     {
-
-		 transform.rotation = Quaternion.Slerp(transform.rotation,GyroToUnity(initRot *
-             (Quaternion.Inverse(initAttitude) * (/*KalmanFilter(*/gyro.attitude/*)*/))),lowPassFilterFactor);
-     }
-
-	 private static Quaternion GyroToUnity(Quaternion q)
-     {
-        return new Quaternion(-q.x, -q.z, -q.y, q.w);
-     }
-
-
+    
     private void initKalmanFilter()
     {
         for (int i = 0; i < N; i++)
@@ -95,7 +62,7 @@ public class GyroController : MonoBehaviour
             theta_offset += gyro.userAcceleration.y;
             Thread.Sleep(sleep_time);
         }
-        
+
         start_time = Time.time;
 
         phi_offset /= N;
@@ -105,8 +72,7 @@ public class GyroController : MonoBehaviour
 
 
     // Compensatory Filter
-
-    /*private void getGyroBias()
+    private void getGyroBias()
     {
         float timeIter = Time.time;
 
@@ -119,8 +85,8 @@ public class GyroController : MonoBehaviour
         bx /= ITERATION_NUMBER;
         by /= ITERATION_NUMBER;
         bz /= ITERATION_NUMBER;
-    }*/
-
+    }
+    
     public Quaternion KalmanFilter(Quaternion att)
     {
 
@@ -152,7 +118,8 @@ public class GyroController : MonoBehaviour
         float[,] measurement = new float[2, 1] { { phi_acc }, { theta_acc } };
         float[,] y_tilde = MatrixSubstract(measurement , MatrixProduct(C,state_estimate));
         float[,] S = MatrixSum(R, MatrixProduct(C, MatrixProduct(P, Transpose(C))));
-        float[,] K = MatrixProduct(P, (MatrixProduct(Transpose(C), (MatrixInverse(S)))));
+        Debug.Log($"{MatrixInverse(S).GetLength(0)},{MatrixInverse(S).GetLength(1)}");
+        float[,] K = MatrixProduct(P, (MatrixProduct((C), (MatrixInverse(S)))));
         state_estimate = MatrixSum(state_estimate , MatrixProduct(K, (y_tilde)));
         P = MatrixProduct(MatrixSubstract(identity4 , MatrixProduct(K,C)), P);
 
@@ -183,7 +150,8 @@ public class GyroController : MonoBehaviour
     {
         if (matrixA == null) Debug.Log("Es A");
         if (matrixB == null) Debug.Log("Es B");
-        Debug.Log($"{matrixB.Length}, {matrixA.GetLength(0)}, {matrixB.GetLength(1)}");
+        Debug.Log($" {matrixA.GetLength(0)}, {matrixA.GetLength(1)}");
+        Debug.Log($" {matrixB.GetLength(0)}, {matrixB.GetLength(1)}");
         int aRows = matrixA.GetLength(0); int aCols = matrixA.GetLength(1);
         int bRows = matrixB.GetLength(0); int bCols = matrixB.GetLength(1);
         if (aCols != bRows)
@@ -212,7 +180,7 @@ public class GyroController : MonoBehaviour
 
     public float[,] MatrixSubstract(float[,] matrixA, float[,] matrixB)
     {
-        Debug.Log($"{matrixA.Length}, {matrixA.GetLength(0)}, {matrixA.GetLength(1)}");
+        //Debug.Log($"{matrixA.Length}, {matrixA.GetLength(0)}, {matrixA.GetLength(1)}");
         int aRows = matrixA.GetLength(0); int aCols = matrixA.GetLength(1);
         int bRows = matrixB.GetLength(0); int bCols = matrixB.GetLength(1);
         if (aCols != bCols || aRows != bRows)
@@ -295,21 +263,16 @@ public class GyroController : MonoBehaviour
     {
         // before calling this helper, permute b using the perm array
         // from MatrixDecompose that generated luMatrix
-        int n = luMatrix.GetLength(0);
+        int n = luMatrix.GetLength(1);
+        Debug.Log($"Longitud de la primera dimensión de la matriz {n}");
         float[] x = new float[n];
         b.CopyTo(x, 0);
-        Debug.Log($"n: {n}");
-        Debug.Log($"n2: {luMatrix.GetLength(1)}");
 
         for (int i = 1; i < n; ++i)
         {
             float sum = x[i];
             for (int j = 0; j < i; ++j)
-            {
-                Debug.Log($"i: {i}");
-                Debug.Log($"j: {j}");
-                sum -= luMatrix[i, j] * x[j];
-            }
+                sum -= luMatrix[i,j] * x[j];
             x[i] = sum;
         }
 

@@ -27,7 +27,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.device-simulator": {
-      "version": "2.2.3-preview",
+      "version": "2.2.4-preview",
       "depth": 0,
       "source": "registry",
       "dependencies": {},
@@ -73,6 +73,13 @@
     "com.unity.mathematics": {
       "version": "1.1.0",
       "depth": 2,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.quicksearch": {
+      "version": "1.5.4",
+      "depth": 0,
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.com"

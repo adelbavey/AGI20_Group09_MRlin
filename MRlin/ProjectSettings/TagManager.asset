@@ -6,6 +6,9 @@ TagManager:
   tags:
   - Wall
   - Floor
+  - Interactive
+  - FPS
+  - Cursor
   layers:
   - Default
   - TransparentFX
