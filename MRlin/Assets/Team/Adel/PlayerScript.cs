@@ -24,6 +24,26 @@ public class PlayerScript : NetworkBehaviour
     public GameObject canvasPre;
     GameObject canvas;
 
+    [SyncVar(hook = nameof(updateInternalPos))]
+    int internalPos=1;
+
+    void updateInternalPos(int Old, int New)
+    {
+        this.transform.position = posObject.transform.GetChild(New).position;
+    }
+
+    [SyncVar (hook= nameof(updateCurrentPos))]
+    string currentPos;
+
+    void updateCurrentPos(string Old, string New)
+    {
+        posObject = GameObject.Find(New);
+        this.transform.position = posObject.transform.position;
+
+    }
+
+    GameObject posObject;
+    
 
     [SyncVar(hook = nameof(updateNumClicks))]
     public int mouseClicks = 0;
@@ -82,6 +102,29 @@ public class PlayerScript : NetworkBehaviour
 
 
     // --- Commands ----------------- (Run on server, with data sent from this client)
+
+    [Command(ignoreAuthority = true)]
+    void CmdInternalMove(int incrementPos)
+    {
+
+        int temp = internalPos;
+        temp += incrementPos;
+        if (temp < 0 || temp >= posObject.transform.childCount) return;
+        internalPos = temp;
+
+    }
+
+    [Command(ignoreAuthority = true)]
+    void CmdMoveTo(string pos)
+    {
+
+        //this.transform.position = GameObject.Find(pos).transform.position;
+
+        currentPos = pos;
+        GameObject.Find(pos).GetComponent<Occupied>().occupied = netId;
+
+
+    }
 
     [Command(ignoreAuthority = true)]
     public void CmdsetIsHeld(bool b)
@@ -267,7 +310,7 @@ public class PlayerScript : NetworkBehaviour
         if (SystemInfo.deviceType == DeviceType.Desktop)
         {
             type = "Desktop";
-            if (GameObject.Find("pos1").GetComponent<Occupied>().occupied == false) CmdMoveTo("pos1");
+            if (GameObject.Find("pos1").GetComponent<Occupied>().occupied == 0) CmdMoveTo("pos1");
             else CmdMoveTo("pos2");
 
         }
@@ -324,6 +367,18 @@ public class PlayerScript : NetworkBehaviour
                     but.onClick.AddListener(delegate { if (connectedPlayerId != 0) connectedPlayer.GetComponent<PlayerScript>().CmdSpellCast(3); else CmdSpellCast(3); });
                 }
 
+                else if (but.gameObject.name == "ButtonLeft")
+                {
+                    Debug.Log("ButtonLeft");
+                    but.onClick.AddListener(delegate { if (connectedPlayerId != 0) connectedPlayer.GetComponent<PlayerScript>().CmdInternalMove(-1); /*else CmdInternalMove(-1);*/ });
+                }
+
+                else if (but.gameObject.name == "ButtonRight")
+                {
+                    Debug.Log("ButtonRight");
+                    but.onClick.AddListener(delegate { if (connectedPlayerId != 0) connectedPlayer.GetComponent<PlayerScript>().CmdInternalMove(1); /*else CmdInternalMove(1);*/ });
+                }
+
             }
 
             //Ref button to this object
@@ -365,13 +420,7 @@ public class PlayerScript : NetworkBehaviour
 
     }
 
-    [Command]
-    void CmdMoveTo(string pos)
-    {
-
-        this.transform.position = GameObject.Find(pos).transform.position;
-        GameObject.Find(pos).GetComponent<Occupied>().occupied = true;
-    }
+    
 
 
     // ------------------
@@ -419,6 +468,12 @@ public class PlayerScript : NetworkBehaviour
 
         if (Input.GetKeyDown(KeyCode.C))
             CmdSpellCast(3);
+
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+            CmdInternalMove(-1);
+
+        if (Input.GetKeyDown(KeyCode.RightArrow))
+            CmdInternalMove(1);
 
         /*
         if(((Canvas)canvas.GetComponent("Canvas")).enabled == true)

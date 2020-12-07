@@ -7,7 +7,7 @@ using Mirror;
 public class Occupied : NetworkBehaviour
 {
     [SyncVar]
-    public bool occupied = false;
+    public uint occupied = 0;
 
     // Start is called before the first frame update
     void Start()
