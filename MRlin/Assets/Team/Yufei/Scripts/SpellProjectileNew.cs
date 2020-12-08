@@ -34,8 +34,8 @@ public class SpellProjectileNew : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float castSpeed = 30f;
-        transform.position += castDir * castSpeed * Time.deltaTime;
+        //float castSpeed = 30f;
+        //transform.position += castDir * castSpeed * Time.deltaTime;
     }
 
     private void OnTriggerEnter(Collider other)
