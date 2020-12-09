@@ -23,15 +23,15 @@ public class ProjectileCasting : MonoBehaviour
 
     private void ProjectileCasting_OnCastingStarts(object sender, MageControllerNew.OnCastingStartsEventArgs e)
     {
-        if (e.spellElement == 1)
+        if (e.spell == 1)
         {
             SpellProjectile.GetChild(0).GetComponent<VisualEffect>().visualEffectAsset = spellVFX1;
         }
-        else if (e.spellElement == 2)
+        else if (e.spell == 2)
         {
             SpellProjectile.GetChild(0).GetComponent<VisualEffect>().visualEffectAsset = spellVFX2;
         }
-        else if (e.spellElement == 3)
+        else if (e.spell == 3)
         {
             SpellProjectile.GetChild(0).GetComponent<VisualEffect>().visualEffectAsset = spellVFX3;
         }
