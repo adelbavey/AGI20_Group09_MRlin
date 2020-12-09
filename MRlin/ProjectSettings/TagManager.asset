@@ -9,6 +9,7 @@ TagManager:
   - Interactive
   - FPS
   - Cursor
+  - Fire
   layers:
   - Default
   - TransparentFX
@@ -20,7 +21,7 @@ TagManager:
   - 
   - MouseTarget
   - SecondCam
-  - 
+  - Highlight
   - 
   - 
   - 

@@ -17,7 +17,7 @@ public class Gesture
 
     public Texture2D MapPattern()
     {
-        Debug.Log($"{this.mouseData.Count}");
+        //Debug.Log($"{this.mouseData.Count}");
         if (this.mouseData.Count < 10)
             return null;
         Bounds bounds = new Bounds(this.mouseData[0], Vector3.zero);
@@ -33,8 +33,8 @@ public class Gesture
         Vector3 size = bounds.size;
         if (size.magnitude < 20.0)
         {
-            Debug.Log($"{size}");
-            Debug.Log($"{size.magnitude}");
+            //Debug.Log($"{size}");
+            //Debug.Log($"{size.magnitude}");
             return null;
         }
         for (int index1 = 0; index1 < this.mouseData.Count - 1; ++index1)

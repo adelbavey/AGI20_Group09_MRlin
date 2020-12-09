@@ -23,7 +23,11 @@ public class ProjectileCasting : MonoBehaviour
 
     private void ProjectileCasting_OnCastingStarts(object sender, MageControllerNew.OnCastingStartsEventArgs e)
     {
-        if (e.spell == 1)
+        if (e.spell == 0)
+        {
+            return;
+        }
+        else if (e.spell == 1)
         {
             SpellProjectile.GetChild(0).GetComponent<VisualEffect>().visualEffectAsset = spellVFX1;
         }
@@ -35,6 +39,11 @@ public class ProjectileCasting : MonoBehaviour
         {
             SpellProjectile.GetChild(0).GetComponent<VisualEffect>().visualEffectAsset = spellVFX3;
         }
+        else if (e.spell == 4)
+        {
+            return;
+        }
+
         Transform spellTransform = Instantiate(SpellProjectile, e.wandTransform.position, Quaternion.Euler(2, 35, 0));
         castingAudio.volume = 0.8f;
         castingAudio.Play();
