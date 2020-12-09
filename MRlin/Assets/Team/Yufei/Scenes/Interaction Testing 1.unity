@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.23207375, g: 0.23575982, b: 0.27139103, a: 1}
+  m_IndirectSpecularColor: {r: 0.104869835, g: 0.09552545, b: 0.24536565, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -3198,10 +3198,6 @@ MonoBehaviour:
   targetTransform: {fileID: 664861323}
   wandTransform: {fileID: 116840413}
   wandMagicTransform: {fileID: 1995071241}
-  runeTransform: {fileID: 403347224}
-  leftRune: {fileID: 1803077}
-  midRune: {fileID: 118110228}
-  rightRune: {fileID: 867601426}
   mouseAimMask:
     serializedVersion: 2
     m_Bits: 256
@@ -6567,10 +6563,6 @@ MonoBehaviour:
   targetTransform: {fileID: 664861323}
   wandTransform: {fileID: 1947809860}
   wandMagicTransform: {fileID: 201512397}
-  runeTransform: {fileID: 403347224}
-  leftRune: {fileID: 1803077}
-  midRune: {fileID: 118110228}
-  rightRune: {fileID: 867601426}
   mouseAimMask:
     serializedVersion: 2
     m_Bits: 256
@@ -8758,6 +8750,14 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 5926172910333854561, guid: 4ea8e90385d660b48bbd5dcd531d764e, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5926172910333854562, guid: 4ea8e90385d660b48bbd5dcd531d764e, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5926172910333854563, guid: 4ea8e90385d660b48bbd5dcd531d764e, type: 3}
       propertyPath: m_Name
       value: Mage_New_Updated_2
@@ -9417,7 +9417,7 @@ PrefabInstance:
     - target: {fileID: 2242321312574373873, guid: 9dbfb4352de285f40adcb69234c4717b, type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: d369e7a7f89a3b340b6c0a9fb291b02a, type: 2}
+      objectReference: {fileID: 9100000, guid: ebfb0d5f00fc2944c8b6745ebe993196, type: 2}
     - target: {fileID: 2242321312574373873, guid: 9dbfb4352de285f40adcb69234c4717b, type: 3}
       propertyPath: m_ApplyRootMotion
       value: 0
@@ -9498,6 +9498,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6178032417768754557, guid: 9dbfb4352de285f40adcb69234c4717b, type: 3}
+      propertyPath: m_Materials.Array.data[1]
+      value: 
+      objectReference: {fileID: 2100000, guid: fa69f72f41417854cab1c22d84581efd, type: 2}
     - target: {fileID: 6225513994887852237, guid: 9dbfb4352de285f40adcb69234c4717b, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -10850,10 +10854,6 @@ MonoBehaviour:
   targetTransform: {fileID: 664861323}
   wandTransform: {fileID: 7983554314762476714}
   wandMagicTransform: {fileID: 7983554314762476713}
-  runeTransform: {fileID: 403347224}
-  leftRune: {fileID: 1803077}
-  midRune: {fileID: 118110228}
-  rightRune: {fileID: 867601426}
   mouseAimMask:
     serializedVersion: 2
     m_Bits: 256

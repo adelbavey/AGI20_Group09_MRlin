@@ -10,10 +10,10 @@ public class MageControllerNew : MonoBehaviour
     public Transform targetTransform;
     public Transform wandTransform;
     public Transform wandMagicTransform;
-    public Transform runeTransform;
-    public AudioSource leftRune;
-    public AudioSource midRune;
-    public AudioSource rightRune;
+    //public Transform runeTransform;
+    //public AudioSource leftRune;
+    //public AudioSource midRune;
+    //public AudioSource rightRune;
 
     public LayerMask mouseAimMask;
     public Transform gyroRayObject;
@@ -25,13 +25,11 @@ public class MageControllerNew : MonoBehaviour
     public class OnCastingStartsEventArgs : EventArgs
     {
         public Transform wandTransform;
-        public int[] runeElements;
-        public int spellElement;
+        public int spell;
     }
 
     //private Animator animator;
     private Rigidbody rBody;
-    private int spellElement;
     [SerializeField]
     private Transform spineController;
     [SerializeField]
@@ -63,11 +61,14 @@ public class MageControllerNew : MonoBehaviour
     private TrailRenderer wandMagicTrail;
     private enum gamePhase { Idle, Spelling, Casting };
     private gamePhase currentPhase;
-    private enum runeHolder { Left, Middle, Right, Finished };
-    private enum runeElement { Ice, Storm, Fire };
-    private runeElement[] elementCombi = { runeElement.Ice, runeElement.Ice, runeElement.Ice };
-    private runeHolder currentRune;
 
+    /* Void: No successful spell.
+     * Ice Spell: Low damage, high speed.
+     * Storm Spell: Medium damage, medium speed.
+     * Fire Spell: High damage, low speed. 
+     * Shield: To deflect opponent's spell. */
+    private enum spellElement { Void, Ice, Storm, Fire, Shield };
+    private spellElement currentSpell;
     private Camera mainCamera;
     private Vector3 targetVector;
 
@@ -76,7 +77,7 @@ public class MageControllerNew : MonoBehaviour
     {
         //animator = GetComponent<Animator>();
         rBody = GetComponent<Rigidbody>();
-        spellElement = 1;
+        currentSpell = spellElement.Void;
 
         wandMagicParticle = wandMagicTransform.GetComponent<ParticleSystem>();
         wandMagicSound = wandMagicTransform.GetComponent<AudioSource>();
@@ -85,8 +86,6 @@ public class MageControllerNew : MonoBehaviour
         mainCamera = Camera.main;
 
         currentPhase = gamePhase.Idle;
-        currentRune = runeHolder.Left;
-        elementCombi = new runeElement[3];
 
         Cursor.visible = false;
         wandMagicTrail.enabled = false;
@@ -119,13 +118,13 @@ public class MageControllerNew : MonoBehaviour
                 OnCastingStarts?.Invoke(this, new OnCastingStartsEventArgs
                 {
                     wandTransform = this.wandTransform,
-                    runeElements = new int[3] { (int)elementCombi[0], (int)elementCombi[1], (int)elementCombi[2] },
-                    spellElement = spellElement
+                    spell = (int)currentSpell
                 });
+                currentPhase = gamePhase.Casting;
                 Invoke("Damage", 1.0f);
             }
         }
-        else // Keyboard and mouse
+        else // Keyboard and mouse interaction
         {
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
@@ -147,9 +146,9 @@ public class MageControllerNew : MonoBehaviour
                 OnCastingStarts?.Invoke(this, new OnCastingStartsEventArgs
                 {
                     wandTransform = this.wandTransform,
-                    runeElements = new int[3] { (int)elementCombi[0], (int)elementCombi[1], (int)elementCombi[2] },
-                    spellElement = spellElement
+                    spell = (int)currentSpell
                 });
+                currentPhase = gamePhase.Casting;
                 Invoke("Damage", 1.0f);
             }
 
@@ -158,25 +157,14 @@ public class MageControllerNew : MonoBehaviour
                 SpellingPhase();
             }
 
-            if (Input.GetKeyDown(KeyCode.R))
+            if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
             {
-                if (currentPhase == gamePhase.Idle && currentRune == runeHolder.Finished)
-                {
-                    RuneStop(3, 3);
-                    currentPhase = gamePhase.Casting;
-                }
+                
             }
-            else if (Input.GetKeyUp(KeyCode.R))
+
+            if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
             {
-                if (currentPhase == gamePhase.Casting)
-                {
-                    // Check if the subscriber is null and pass in spell element info
-                    OnCastingStarts?.Invoke(this, new OnCastingStartsEventArgs
-                    {
-                        wandTransform = this.wandTransform,
-                        runeElements = new int[3] { (int)elementCombi[0], (int)elementCombi[1], (int)elementCombi[2] }
-                    });
-                }
+
             }
         }
     }
@@ -206,112 +194,19 @@ public class MageControllerNew : MonoBehaviour
         {
             headFireBig.GetComponent<VisualEffect>().visualEffectAsset = fireBigVFX1;
             headGlow.GetComponent<VisualEffect>().visualEffectAsset = headGlowVFX1;
-            spellElement = 1;
+            currentSpell = spellElement.Ice;
         }
         else if (Input.GetKeyDown(KeyCode.W))
         {
             headFireBig.GetComponent<VisualEffect>().visualEffectAsset = fireBigVFX2;
             headGlow.GetComponent<VisualEffect>().visualEffectAsset = headGlowVFX2;
-            spellElement = 2;
+            currentSpell = spellElement.Storm;
         }
         else if (Input.GetKeyDown(KeyCode.E))
         {
             headFireBig.GetComponent<VisualEffect>().visualEffectAsset = fireBigVFX3;
             headGlow.GetComponent<VisualEffect>().visualEffectAsset = headGlowVFX3;
-            spellElement = 3;
-        }
-
-        //if (currentRune == runeHolder.Left)
-        //{
-        //    if (Input.GetKeyDown(KeyCode.Q))
-        //    {
-        //        leftRune.Play();
-        //        RuneStart(0, 0);
-        //        elementCombi[0] = runeElement.Ice;
-        //        currentRune = runeHolder.Middle;
-        //    }
-        //    else if (Input.GetKeyDown(KeyCode.W))
-        //    {
-        //        leftRune.Play();
-        //        RuneStart(0, 1);
-        //        elementCombi[0] = runeElement.Storm;
-        //        currentRune = runeHolder.Middle;
-        //    }
-        //    else if (Input.GetKeyDown(KeyCode.E))
-        //    {
-        //        leftRune.Play();
-        //        RuneStart(0, 2);
-        //        elementCombi[0] = runeElement.Fire;
-        //        currentRune = runeHolder.Middle;
-        //    }
-        //}
-        //else if (currentRune == runeHolder.Middle)
-        //{
-        //    if (Input.GetKeyDown(KeyCode.Q))
-        //    {
-        //        midRune.Play();
-        //        RuneStart(1, 0);
-        //        elementCombi[1] = runeElement.Ice;
-        //        currentRune = runeHolder.Right;
-        //    }
-        //    else if (Input.GetKeyDown(KeyCode.W))
-        //    {
-        //        midRune.Play();
-        //        RuneStart(1, 1);
-        //        elementCombi[1] = runeElement.Storm;
-        //        currentRune = runeHolder.Right;
-        //    }
-        //    else if (Input.GetKeyDown(KeyCode.E))
-        //    {
-        //        midRune.Play();
-        //        RuneStart(1, 2);
-        //        elementCombi[1] = runeElement.Fire;
-        //        currentRune = runeHolder.Right;
-        //    }
-        //}
-        //else if (currentRune == runeHolder.Right)
-        //{
-        //    if (Input.GetKeyDown(KeyCode.Q))
-        //    {
-        //        rightRune.Play();
-        //        RuneStart(2, 0);
-        //        elementCombi[2] = runeElement.Ice;
-        //        currentRune = runeHolder.Finished;
-        //    }
-        //    else if (Input.GetKeyDown(KeyCode.W))
-        //    {
-        //        rightRune.Play();
-        //        RuneStart(2, 1);
-        //        elementCombi[2] = runeElement.Storm;
-        //        currentRune = runeHolder.Finished;
-        //    }
-        //    else if (Input.GetKeyDown(KeyCode.E))
-        //    {
-        //        rightRune.Play();
-        //        RuneStart(2, 2);
-        //        elementCombi[2] = runeElement.Fire;
-        //        currentRune = runeHolder.Finished;
-        //    }
-        //}
-    }
-
-    private void RuneStart(int position, int element)
-    {
-        runeTransform.GetChild(position).GetChild(element).GetComponent<MeshRenderer>().enabled = true;
-        runeTransform.GetChild(position).GetChild(element).GetComponent<Light>().enabled = true;
-        runeTransform.GetChild(position).GetChild(element).GetChild(0).GetComponent<ParticleSystem>().Play();
-    }
-
-    private void RuneStop(int position, int element)
-    {
-        for (int i = 0; i < position; i++)
-        {
-            for (int j = 0; j < element; j++)
-            {
-                runeTransform.GetChild(i).GetChild(j).GetComponent<MeshRenderer>().enabled = false;
-                runeTransform.GetChild(i).GetChild(j).GetComponent<Light>().enabled = false;
-                runeTransform.GetChild(i).GetChild(j).GetChild(0).GetComponent<ParticleSystem>().Stop();
-            }
+            currentSpell = spellElement.Fire;
         }
     }
 
