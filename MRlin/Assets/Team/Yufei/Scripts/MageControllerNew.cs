@@ -8,6 +8,7 @@ public class MageControllerNew : MonoBehaviour
 {
     [Tooltip("1: Player 1; 2: Player 2")]
     public int playerIndex = 1;
+    public Transform opponentTransform;
     public bool gyroInteraction = false;
     public Transform targetTransform;
     public Transform wandTransform;
@@ -19,21 +20,26 @@ public class MageControllerNew : MonoBehaviour
     public List<Transform> islandHighlightTransforms;
 
     public LayerMask mouseAimMask;
-    public LayerMask transparentLayer;
+    public LayerMask highlightLayer1; // Our layer
+    public LayerMask highlightLayer2; // Opponent's layer
     public Transform gyroRayObject;
 
-    public int currentHealth;
-    public HealthBar healthBar;
+    public int currentHealth; // Our health value
+    public int oppoHealth; // Opponent's health value
+    public HealthBar healthBar1; // Our bar
+    public HealthBar healthBar2; // Opponent's bar
 
     public event EventHandler<OnCastingStartsEventArgs> OnCastingStarts;
     public class OnCastingStartsEventArgs : EventArgs
     {
         public Transform wandTransform;
+        public Transform targetTransform;
         public int spell;
     }
+
     public int gestureCode;
 
-    //private Animator animator;
+    //Private fields;
     private Rigidbody rBody;
     [SerializeField]
     private Transform spineController;
@@ -76,6 +82,9 @@ public class MageControllerNew : MonoBehaviour
     [SerializeField]
     private VisualEffectAsset headSparksVFX2;
 
+    [SerializeField]
+    private Transform shieldTransform;
+
     private ParticleSystem wandMagicParticle;
     private AudioSource wandMagicSound;
     private TrailRenderer wandMagicTrail;
@@ -92,11 +101,16 @@ public class MageControllerNew : MonoBehaviour
     private Camera mainCamera;
     private Vector3 targetVector;
 
-    private enum magePos { Left, Middle, Right };
-    private magePos currentPos;
+    public enum magePos { Left, Middle, Right };
+
+    public magePos currentPos; // Our position
+    public magePos oppoPos; // Opponent's position
     private Vector3 oldMagePosition;
 
     private Transform currentTarget;
+    private magePos targetPos;
+
+    public bool shieldProtected;
 
     // Start is called before the first frame update
     void Start()
@@ -105,11 +119,15 @@ public class MageControllerNew : MonoBehaviour
         {
             headGlow.GetComponent<VisualEffect>().visualEffectAsset = headGlowVFX1;
             headSparks.GetComponent<VisualEffect>().visualEffectAsset = headSparksVFX1;
+            highlightLayer1 = LayerMask.GetMask("Highlight1");
+            highlightLayer2 = LayerMask.GetMask("Highlight2");
         }
         else if (playerIndex == 2)
         {
             headGlow.GetComponent<VisualEffect>().visualEffectAsset = headGlowVFX2;
             headSparks.GetComponent<VisualEffect>().visualEffectAsset = headSparksVFX2;
+            highlightLayer1 = LayerMask.GetMask("Highlight2");
+            highlightLayer2 = LayerMask.GetMask("Highlight1");
         }
         else
         {
@@ -121,7 +139,6 @@ public class MageControllerNew : MonoBehaviour
         rBody = GetComponent<Rigidbody>();
         currentSpell = spellElement.Void;
         gestureCode = 0;
-        currentPos = magePos.Left;
 
         wandMagicParticle = wandMagicTransform.GetComponent<ParticleSystem>();
         wandMagicSound = wandMagicTransform.GetComponent<AudioSource>();
@@ -135,20 +152,45 @@ public class MageControllerNew : MonoBehaviour
         wandMagicTrail.enabled = false;
 
         currentHealth = 100;
-        healthBar.setHealth(currentHealth);
+        oppoHealth = 100;
+        healthBar1.setHealth(currentHealth);
+        healthBar2.setHealth(oppoHealth);
+        currentPos = magePos.Left;
+        oppoPos = magePos.Left;
+
+        shieldProtected = false;
 
         for (int i = 0; i < 3; i++)
         {
             islandHighlightTransforms[i].GetComponent<MeshRenderer>().enabled = false;
         }
-
-        Physics.IgnoreLayerCollision(0, 8);
-        Physics.IgnoreLayerCollision(0, 10);
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (currentHealth > 0 && oppoHealth > 0)
+        {
+            healthBar1.setHealth(currentHealth);
+            healthBar2.setHealth(oppoHealth);
+        }
+        else if (currentHealth > 0 && oppoHealth <= 0)
+        {
+            healthBar1.setHealth(currentHealth);
+            healthBar2.setHealth(0);
+            endGame(true);
+        }
+        else if (currentHealth <= 0 && oppoHealth > 0)
+        {
+            healthBar1.setHealth(0);
+            healthBar2.setHealth(oppoHealth);
+            endGame(false);
+        }
+        else
+        {
+            Debug.LogError("Unlikely situation: both lost");
+        }
+
         mainCamera.transform.rotation = Quaternion.LookRotation(
             Vector3.Normalize(oppoIslandTransforms[1].position - mainCamera.transform.position));
 
@@ -174,6 +216,7 @@ public class MageControllerNew : MonoBehaviour
                     transform.position = ourIslandTransforms[0].position + (oldMagePosition - ourIslandTransforms[1].position);
                     mainCamera.transform.position += transform.position - oldMagePosition;
                     currentPos = magePos.Left;
+                    opponentTransform.GetComponent<MageControllerNew>().oppoPos = magePos.Left;
                 }
                 else if (currentPos == magePos.Right)
                 {
@@ -181,6 +224,7 @@ public class MageControllerNew : MonoBehaviour
                     transform.position = ourIslandTransforms[1].position + (oldMagePosition - ourIslandTransforms[2].position);
                     mainCamera.transform.position += transform.position - oldMagePosition;
                     currentPos = magePos.Middle;
+                    opponentTransform.GetComponent<MageControllerNew>().oppoPos = magePos.Middle;
                 }
             }
             if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
@@ -191,6 +235,7 @@ public class MageControllerNew : MonoBehaviour
                     transform.position = ourIslandTransforms[2].position + (oldMagePosition - ourIslandTransforms[1].position);
                     mainCamera.transform.position += transform.position - oldMagePosition;
                     currentPos = magePos.Right;
+                    opponentTransform.GetComponent<MageControllerNew>().oppoPos = magePos.Right;
                 }
                 else if (currentPos == magePos.Left)
                 {
@@ -198,6 +243,7 @@ public class MageControllerNew : MonoBehaviour
                     transform.position = ourIslandTransforms[1].position + (oldMagePosition - ourIslandTransforms[0].position);
                     mainCamera.transform.position += transform.position - oldMagePosition;
                     currentPos = magePos.Middle;
+                    opponentTransform.GetComponent<MageControllerNew>().oppoPos = magePos.Middle;
                 }
             }
         }
@@ -225,6 +271,7 @@ public class MageControllerNew : MonoBehaviour
                     transform.position = ourIslandTransforms[0].position + (oldMagePosition - ourIslandTransforms[1].position);
                     mainCamera.transform.position += transform.position - oldMagePosition;
                     currentPos = magePos.Left;
+                    opponentTransform.GetComponent<MageControllerNew>().oppoPos = magePos.Left;
                 }
                 else if (currentPos == magePos.Right)
                 {
@@ -232,6 +279,7 @@ public class MageControllerNew : MonoBehaviour
                     transform.position = ourIslandTransforms[1].position + (oldMagePosition - ourIslandTransforms[2].position);
                     mainCamera.transform.position += transform.position - oldMagePosition;
                     currentPos = magePos.Middle;
+                    opponentTransform.GetComponent<MageControllerNew>().oppoPos = magePos.Middle;
                 }
             }
             if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
@@ -242,6 +290,7 @@ public class MageControllerNew : MonoBehaviour
                     transform.position = ourIslandTransforms[2].position + (oldMagePosition - ourIslandTransforms[1].position);
                     mainCamera.transform.position += transform.position - oldMagePosition;
                     currentPos = magePos.Right;
+                    opponentTransform.GetComponent<MageControllerNew>().oppoPos = magePos.Right;
                 }
                 else if (currentPos == magePos.Left)
                 {
@@ -249,6 +298,7 @@ public class MageControllerNew : MonoBehaviour
                     transform.position = ourIslandTransforms[1].position + (oldMagePosition - ourIslandTransforms[0].position);
                     mainCamera.transform.position += transform.position - oldMagePosition;
                     currentPos = magePos.Middle;
+                    opponentTransform.GetComponent<MageControllerNew>().oppoPos = magePos.Middle;
                 }
             }
         }
@@ -273,11 +323,18 @@ public class MageControllerNew : MonoBehaviour
         }
         else if (currentPhase == gamePhase.Selecting)
         {
-            SelectingPhase();
-            if (Input.GetMouseButtonDown(0))
+            if (currentSpell != spellElement.Void)
             {
-                StartSelectingPhase(false);
-                StartShootingPhase(true);
+                SelectingPhase();
+                if (Input.GetMouseButtonDown(0))
+                {
+                    StartSelectingPhase(false);
+                    StartShootingPhase(true);
+                }
+            }
+            else
+            {
+                currentPhase = gamePhase.Idle;
             }
         }
         else if (currentPhase == gamePhase.Shooting)
@@ -317,35 +374,50 @@ public class MageControllerNew : MonoBehaviour
     {
         if (b)
         {
-            currentPhase = gamePhase.Selecting;
-
-            // Handle the result of the spelling phase
-            switch (gestureCode)
+            if (gestureCode == 4)
             {
-                case 0:
-                    currentSpell = spellElement.Void;
-                    break;
-                case 1:
-                    currentSpell = spellElement.Ice;
-                    headFireBig.GetComponent<VisualEffect>().visualEffectAsset = fireBigVFX1;
-                    headFireSmall.GetComponent<VisualEffect>().visualEffectAsset = fireSmallVFX1;
-                    break;
-                case 2:
-                    currentSpell = spellElement.Storm;
-                    headFireBig.GetComponent<VisualEffect>().visualEffectAsset = fireBigVFX2;
-                    headFireSmall.GetComponent<VisualEffect>().visualEffectAsset = fireSmallVFX2;
-                    break;
-                case 3:
-                    currentSpell = spellElement.Fire;
-                    headFireBig.GetComponent<VisualEffect>().visualEffectAsset = fireBigVFX3;
-                    headFireSmall.GetComponent<VisualEffect>().visualEffectAsset = fireSmallVFX3;
-                    break;
-                case 4:
-                    currentSpell = spellElement.Shield;
-                    break;
-                default:
-                    currentSpell = spellElement.Void;
-                    break;
+                currentPhase = gamePhase.Idle; // Skip selection and shooting
+
+                currentSpell = spellElement.Shield;
+                shieldProtected = true;
+
+                Transform spellTransform = Instantiate(
+                    shieldTransform,
+                    transform.position,
+                    transform.rotation
+                    );
+
+                StartCoroutine(DestroyShield(spellTransform, 3.0f));
+            }
+            else
+            {
+                currentPhase = gamePhase.Selecting;
+
+                // Handle the result of the spelling phase
+                switch (gestureCode)
+                {
+                    case 0:
+                        currentSpell = spellElement.Void;
+                        break;
+                    case 1:
+                        currentSpell = spellElement.Ice;
+                        headFireBig.GetComponent<VisualEffect>().visualEffectAsset = fireBigVFX1;
+                        headFireSmall.GetComponent<VisualEffect>().visualEffectAsset = fireSmallVFX1;
+                        break;
+                    case 2:
+                        currentSpell = spellElement.Storm;
+                        headFireBig.GetComponent<VisualEffect>().visualEffectAsset = fireBigVFX2;
+                        headFireSmall.GetComponent<VisualEffect>().visualEffectAsset = fireSmallVFX2;
+                        break;
+                    case 3:
+                        currentSpell = spellElement.Fire;
+                        headFireBig.GetComponent<VisualEffect>().visualEffectAsset = fireBigVFX3;
+                        headFireSmall.GetComponent<VisualEffect>().visualEffectAsset = fireSmallVFX3;
+                        break;
+                    default:
+                        currentSpell = spellElement.Void;
+                        break;
+                }
             }
         }
         else
@@ -363,13 +435,40 @@ public class MageControllerNew : MonoBehaviour
         if (b)
         {
             currentPhase = gamePhase.Shooting;
+
             // Check if the subscriber is null and pass in spell element info
             OnCastingStarts?.Invoke(this, new OnCastingStartsEventArgs
             {
                 wandTransform = this.wandTransform,
+                targetTransform = this.currentTarget,
                 spell = (int)currentSpell
             });
-            Invoke("Damage", 1.0f);
+
+            if (currentTarget.name == "Select_Highlight_2")
+            {
+                targetPos = magePos.Left;
+            }
+            else if (currentTarget.name == "Select_Highlight_1")
+            {
+                targetPos = magePos.Middle;
+            }
+            else if (currentTarget.name == "Select_Highlight_0")
+            {
+                targetPos = magePos.Right;
+            }
+
+            if (currentSpell == spellElement.Ice)
+            {
+                StartCoroutine(Damage(1, 0.707f));
+            }
+            else if (currentSpell == spellElement.Storm)
+            {
+                StartCoroutine(Damage(2, 1.0f));
+            }
+            else if (currentSpell == spellElement.Fire)
+            {
+                StartCoroutine(Damage(3, 1.414f));
+            }
         }
         else
         {
@@ -383,7 +482,7 @@ public class MageControllerNew : MonoBehaviour
     private void SelectingPhase()
     {
         RaycastHit hit;
-        if (Physics.Raycast(mouseRayObject.position, targetVector, out hit, Mathf.Infinity, transparentLayer))
+        if (Physics.Raycast(mouseRayObject.position, targetVector, out hit, Mathf.Infinity, highlightLayer1))
         {
             for (int i = 0; i < 3; i++)
             {
@@ -393,7 +492,6 @@ public class MageControllerNew : MonoBehaviour
             currentTarget = hit.transform;
         }
     }
-
 
     private void FixedUpdate()
     {
@@ -408,13 +506,54 @@ public class MageControllerNew : MonoBehaviour
         rightHandController.rotation = Quaternion.LookRotation(mouseRayObject.right, mouseRayObject.forward);
     }
 
-    private void Damage()
+    private IEnumerator Damage(int spell, float delayTime)
     {
-        if (currentHealth > 0)
+        yield return new WaitForSeconds(delayTime);
+        if (!opponentTransform.GetComponent<MageControllerNew>().shieldProtected)
         {
-            currentHealth -= 10;
+            if (oppoPos == targetPos)
+            {
+                if (spell == 1)
+                {
+                    oppoHealth -= 7;
+                    opponentTransform.GetComponent<MageControllerNew>().currentHealth -= 7;
+                }
+                else if (spell == 2)
+                {
+                    oppoHealth -= 10;
+                    opponentTransform.GetComponent<MageControllerNew>().currentHealth -= 10;
+                }
+                else if (spell == 3)
+                {
+                    oppoHealth -= 14;
+                    opponentTransform.GetComponent<MageControllerNew>().currentHealth -= 14;
+                }
+            }
         }
-        healthBar.setHealth(currentHealth);
+    }
+
+    private IEnumerator DestroyShield(Transform shieldInstance, float delayTime)
+    {
+        yield return new WaitForSeconds(delayTime);
+
+        shieldProtected = false;
+        foreach (Transform child in shieldInstance)
+        {
+            GameObject.Destroy(child.gameObject);
+        }
+        GameObject.Destroy(shieldInstance.gameObject);
+    }
+
+    private void endGame(bool win)
+    {
+        if (win)
+        {
+            Debug.Log("You won!");
+        }
+        else
+        {
+            Debug.Log("You lost!");
+        }
     }
 }
 
