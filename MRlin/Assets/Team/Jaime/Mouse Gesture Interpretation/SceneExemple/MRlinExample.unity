@@ -1180,7 +1180,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1669024262379614239, guid: ccb58b0096627784198e52118d2c311d, type: 3}
       propertyPath: gyroControl
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ccb58b0096627784198e52118d2c311d, type: 3}

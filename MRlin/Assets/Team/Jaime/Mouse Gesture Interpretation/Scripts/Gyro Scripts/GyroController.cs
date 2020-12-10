@@ -26,7 +26,6 @@ public class GyroController : MonoBehaviour
     private const float lowPassFilterFactor = 0.2f;
 
 
-
     //-----------------------------------------------------------------------------------------
     // Filter constants:
     //-----------------------------------------------------------------------------------------
@@ -55,6 +54,8 @@ public class GyroController : MonoBehaviour
 
         originalPos = originalAttitude * Vector3.forward;
         distanceToCastingPlane = Mathf.Abs(this.transform.position.z - cursor.transform.position.z);
+
+        x = QuaternionToVector(gyro.attitude);
     }
 
 
@@ -79,7 +80,6 @@ public class GyroController : MonoBehaviour
         initAttitude = gyro.attitude;
         initRot = transform.rotation;
     }
-
 
 
      private void Update()
