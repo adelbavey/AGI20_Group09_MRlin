@@ -22,7 +22,6 @@ public class MageControllerNew : MonoBehaviour
     public LayerMask mouseAimMask;
     public LayerMask highlightLayer1; // Our layer
     public LayerMask highlightLayer2; // Opponent's layer
-    public Transform gyroRayObject;
 
     public int currentHealth; // Our health value
     public int oppoHealth; // Opponent's health value
