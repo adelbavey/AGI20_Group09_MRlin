@@ -91,8 +91,6 @@ public class PlayerInputMRlin : MonoBehaviour
 
         if (gyroControl) usingGyro = transform.GetComponent<MageControllerNew>().gyroInteraction;
 
-        Debug.Log(usingGyro);
-
         if (this.lineMaterial == null)
         {
             Debug.LogError("<b>Mouse Gesture Interpretation:</b> Line Material need a material to display colors in the drawning line");
