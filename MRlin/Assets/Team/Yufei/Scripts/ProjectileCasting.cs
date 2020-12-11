@@ -15,28 +15,51 @@ public class ProjectileCasting : MonoBehaviour
     private VisualEffectAsset spellVFX2;
     [SerializeField]
     private VisualEffectAsset spellVFX3;
+
+    private VisualEffect projectileVFX;
+    private float playRate;
+    private Vector3 shootingPath;
+
     // Start is called before the first frame update
     void Start()
     {
         GetComponent<MageControllerNew>().OnCastingStarts += ProjectileCasting_OnCastingStarts;
+        projectileVFX = SpellProjectile.GetChild(0).GetComponent<VisualEffect>();
     }
 
     private void ProjectileCasting_OnCastingStarts(object sender, MageControllerNew.OnCastingStartsEventArgs e)
     {
-        if (e.spellElement == 1)
+        if (e.spell == 1)
         {
-            SpellProjectile.GetChild(0).GetComponent<VisualEffect>().visualEffectAsset = spellVFX1;
+            projectileVFX.visualEffectAsset = spellVFX1;
+            playRate = 1.414f;
         }
-        else if (e.spellElement == 2)
+        else if (e.spell == 2)
         {
-            SpellProjectile.GetChild(0).GetComponent<VisualEffect>().visualEffectAsset = spellVFX2;
+            projectileVFX.visualEffectAsset = spellVFX2;
+            playRate = 1.0f;
         }
-        else if (e.spellElement == 3)
+        else if (e.spell == 3)
         {
-            SpellProjectile.GetChild(0).GetComponent<VisualEffect>().visualEffectAsset = spellVFX3;
+            projectileVFX.visualEffectAsset = spellVFX3;
+            playRate = 0.707f;
         }
-        Transform spellTransform = Instantiate(SpellProjectile, e.wandTransform.position, Quaternion.Euler(2, 35, 0));
-        castingAudio.volume = 0.8f;
+        else if (e.spell == 4)
+        {
+            return;
+        }
+        else if (e.spell == 0)
+        {
+            return;
+        }
+
+        shootingPath = (e.targetTransform.position + new Vector3(0, -1.0f, 0)) - e.wandTransform.position;
+        projectileVFX.SetFloat("Distance", shootingPath.magnitude * 0.5f);
+       
+        Transform spellTransform = Instantiate(SpellProjectile, e.wandTransform.position, Quaternion.LookRotation(shootingPath));
+        spellTransform.GetChild(0).GetComponent<VisualEffect>().playRate = this.playRate * 1.1f;
+        
+        castingAudio.volume = 0.7f;
         castingAudio.Play();
     }
 
