@@ -96,7 +96,7 @@ public class GyroController : MonoBehaviour
 
         currentPos = Quaternion.Slerp(transform.rotation,GyroToUnity(initRot *
              (Quaternion.Inverse(initAttitude) * VectorToQuaternion(result))),lowPassFilterFactor);
-        //transform.rotation = currentPos;
+        transform.rotation = currentPos;
 
         placeCursor();
 
