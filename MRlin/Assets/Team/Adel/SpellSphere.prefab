@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 7210893846271122800}
   m_Layer: 0
   m_Name: SpellSphere
-  m_TagString: Untagged
+  m_TagString: Fire
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -161,3 +161,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27aa2a2168298854fa80c2bd5afe1d2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  playerId: 0
+  targetObj: {fileID: 0}

@@ -19,6 +19,13 @@ public class PlayerScript : NetworkBehaviour
     [SyncVar(hook=nameof(changeText))]
     public string type;
 
+    [SyncVar(hook=nameof(updateHealth))]
+    public int health = 50;
+    void updateHealth(int Old, int New)
+    {
+        GameObject.Find("Counter").GetComponent<counter>().changeText(0, 0);
+    }
+
     TextMesh isPC;
 
     public GameObject canvasPre;
@@ -71,6 +78,7 @@ public class PlayerScript : NetworkBehaviour
 
     void cpid(uint Old, uint New)
     {
+        if (New == 0) { connectedPlayer = null; return; }
         NetworkIdentity.spawned.TryGetValue(New, out NetworkIdentity Identity);
         connectedPlayer = Identity.gameObject;
     }
@@ -84,6 +92,7 @@ public class PlayerScript : NetworkBehaviour
 
     void opid(uint Old, uint New)
     {
+        if (New == 0) { opponentPlayer = GameObject.Find("testTargetSphere");return; }
         NetworkIdentity.spawned.TryGetValue(New, out NetworkIdentity Identity);
         opponentPlayer = Identity.gameObject;
         //if (opponentPlayer.transform.position == GameObject.Find("pos1").transform.position) CmdMoveTo(GameObject.Find("pos2").transform.position);
@@ -102,6 +111,12 @@ public class PlayerScript : NetworkBehaviour
 
 
     // --- Commands ----------------- (Run on server, with data sent from this client)
+
+    [Command(ignoreAuthority = true)]
+    void CmdDecreaseHealth(int n)
+    {
+        health -= n;
+    }
 
     [Command(ignoreAuthority = true)]
     void CmdInternalMove(int incrementPos)
@@ -285,6 +300,17 @@ public class PlayerScript : NetworkBehaviour
     {
         // disable client stuff
         //CmdCounterMinus();
+        GameObject.Find("Counter").GetComponent<counter>().playerIds.Remove(netId);
+        GameObject.Find(currentPos).GetComponent<Occupied>().occupied = 0;
+        if (opponentPlayerId != 0)
+        {
+            opponentPlayer.GetComponent<PlayerScript>().opponentPlayerId = 0;
+        }
+
+        if (connectedPlayerId != 0)
+        {
+            connectedPlayer.GetComponent<PlayerScript>().connectedPlayerId = 0;
+        }
     }
 
     public override void OnStartClient()
@@ -496,6 +522,13 @@ public class PlayerScript : NetworkBehaviour
         {
             Debug.DrawRay(contact.point, contact.normal * 5, Color.white);
         }
+
+        if (collision.gameObject.tag == "Fire" && collision.gameObject.GetComponent<SpellScript>().playerId != netId)
+        {
+            CmdDecreaseHealth(5);
+        }
+
+
         /*
         if (collision.relativeVelocity.magnitude > 2)
             audioSource.Play();
@@ -503,4 +536,7 @@ public class PlayerScript : NetworkBehaviour
 
 
     }
+
+
+    
 }

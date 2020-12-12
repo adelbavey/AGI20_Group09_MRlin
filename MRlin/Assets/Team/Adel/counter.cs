@@ -53,6 +53,7 @@ public class counter : NetworkBehaviour
             "connected id: " + ps.connectedPlayerId + "\n" +
             "opponent id: " + ps.opponentPlayerId + "\n" +
             "held button: " + ps.drawHeld + "\n" +
+            "health: " + ps.health + "\n" +
             "-----------------" + "\n";
         }
         
