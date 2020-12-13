@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//Attached to mirror sphere
 public class targetCollision : MonoBehaviour
 {
     // Start is called before the first frame update

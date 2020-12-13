@@ -42,10 +42,7 @@ public class ExtendedManager : NetworkManager
         NetworkServer.AddPlayerForConnection(conn, player);
         //---
 
-        GameObject.Find("Counter").GetComponent<counter>().numOfPlayers += 1;
-
-        //GameObject.Find("Counter").GetComponent<counter>().players.Add(conn.identity.netId, player);
-
+        GameObject.Find("GameStateObj").GetComponent<GameState>().numOfPlayers += 1;
 
 
     }
@@ -54,11 +51,9 @@ public class ExtendedManager : NetworkManager
     public override void OnServerDisconnect(NetworkConnection conn)
     {
         
-        GameObject.Find("Counter").GetComponent<counter>().numOfPlayers -= 1;
+        GameObject.Find("GameStateObj").GetComponent<GameState>().numOfPlayers -= 1;
 
-        //GameObject.Find("Counter").GetComponent<counter>().playerNetStates.Remove(conn.identity.netId);
 
-        GameObject.Find("Counter").GetComponent<counter>().players.Remove(conn.identity.netId);
 
         base.OnServerDisconnect(conn);
     }

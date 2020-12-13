@@ -15,25 +15,30 @@ using UnityEngine.UI;
 
 public class PlayerScript : NetworkBehaviour
 {
+    TextMesh isPC;
+    GameObject GameStateObj;
+    public GameObject canvasPre; //Prefab
+    GameObject canvas;
+    public GameObject castObject;
+
     //Sync type (Desktop/Handeld) between all clients
     [SyncVar(hook=nameof(changeText))]
     public string type;
+    void changeText(string oldValue, string newValue)
+    {
+        isPC = GetComponentInChildren<TextMesh>();
+        isPC.text = type + " ct " + netId;//type;
+    }
 
     [SyncVar(hook=nameof(updateHealth))]
     public int health = 50;
     void updateHealth(int Old, int New)
     {
-        GameObject.Find("Counter").GetComponent<counter>().changeText(0, 0);
+        GameObject.Find("GameStateObj").GetComponent<GameState>().changeText(0, 0);
     }
-
-    TextMesh isPC;
-
-    public GameObject canvasPre;
-    GameObject canvas;
 
     [SyncVar(hook = nameof(updateInternalPos))]
     int internalPos=1;
-
     void updateInternalPos(int Old, int New)
     {
         this.transform.position = posObject.transform.GetChild(New).position;
@@ -41,73 +46,60 @@ public class PlayerScript : NetworkBehaviour
 
     [SyncVar (hook= nameof(updateCurrentPos))]
     string currentPos;
-
     void updateCurrentPos(string Old, string New)
     {
         posObject = GameObject.Find(New);
         this.transform.position = posObject.transform.position;
 
     }
-
     GameObject posObject;
     
-
     [SyncVar(hook = nameof(updateNumClicks))]
     public int mouseClicks = 0;
+    void updateNumClicks(int Old, int New)
+    {
+        GameObject.Find("GameStateObj").GetComponent<GameState>().changeText(0, 0);
+
+        //GameObject sphere = Instantiate("Sphere");
+
+        //NetworkServer.Spawn(sphere);
+
+    }
 
     [SyncVar]
     public Quaternion attitude = new Quaternion();
 
     [SyncVar(hook=nameof(updateDrawHeld))]
     public bool drawHeld = false;
-
-    //
     void updateDrawHeld(bool Old, bool New)
     {
-        GameObject.Find("Counter").GetComponent<counter>().changeText(0, 0);
+        GameObject.Find("GameStateObj").GetComponent<GameState>().changeText(0, 0);
     }
-    //
-
-    public GameObject castObject;
 
     //Phone/Desktop connection-------------------------------
     [SyncVar(hook = nameof(cpid))]
     public uint connectedPlayerId = 0;
-
-    public GameObject connectedPlayer = null;
-
     void cpid(uint Old, uint New)
     {
         if (New == 0) { connectedPlayer = null; return; }
         NetworkIdentity.spawned.TryGetValue(New, out NetworkIdentity Identity);
         connectedPlayer = Identity.gameObject;
     }
+    public GameObject connectedPlayer = null;
     //-------------
 
     //Opponent connection--------------------------
     [SyncVar(hook = nameof(opid))]
     public uint opponentPlayerId = 0;
-
-    public GameObject opponentPlayer = null;
-
     void opid(uint Old, uint New)
     {
-        if (New == 0) { opponentPlayer = GameObject.Find("testTargetSphere");return; }
+        if (New == 0) { opponentPlayer = GameObject.Find("mirrorSphere");return; }
         NetworkIdentity.spawned.TryGetValue(New, out NetworkIdentity Identity);
         opponentPlayer = Identity.gameObject;
         //if (opponentPlayer.transform.position == GameObject.Find("pos1").transform.position) CmdMoveTo(GameObject.Find("pos2").transform.position);
     }
+    public GameObject opponentPlayer = null;
     //------------------
-
-    void updateNumClicks(int Old, int New)
-    {
-        GameObject.Find("Counter").GetComponent<counter>().changeText(0, 0);
-
-        //GameObject sphere = Instantiate("Sphere");
-
-        //NetworkServer.Spawn(sphere);
-        
-    }
 
 
     // --- Commands ----------------- (Run on server, with data sent from this client)
@@ -176,7 +168,7 @@ public class PlayerScript : NetworkBehaviour
         NetworkServer.Spawn(s);
 
         mouseClicks += 1;
-        GameObject.Find("Counter").GetComponent<counter>().mouseNoClicks += 1;
+        GameObject.Find("GameStateObj").GetComponent<GameState>().mouseNoClicks += 1;
     }
 
     [Command(ignoreAuthority = true)]
@@ -221,28 +213,19 @@ public class PlayerScript : NetworkBehaviour
     void CmdSetAttitude(Quaternion att)
     {
         attitude = att;
-        GameObject.Find("Counter").GetComponent<counter>().changeText(0, 0);
+        GameObject.Find("GameStateObj").GetComponent<GameState>().changeText(0, 0);
     }
 
 
     [Command(ignoreAuthority = true)]
     void CmdAddPNS(uint id, string type)
     {
-        //GameObject counter = GameObject.Find("Counter");
-        //TextMesh tm = counter.GetComponentInChildren<TextMesh>();
 
-        //GameObject.Find("Counter").GetComponent<counter>().playerNetStates.Add(id, new PlayerNetState() { netId = id, type = type, mouseNoClicks= 0 });
-
-        //Old
-        NetworkIdentity.spawned.TryGetValue(id, out NetworkIdentity thisIdentity);
-
-        //Old
-        GameObject.Find("Counter").GetComponent<counter>().players.Add(id, thisIdentity.gameObject);
 
         bool isPhone = type.Contains("Handheld");
 
         // For phone/desktop
-        foreach (uint fid in GameObject.Find("Counter").GetComponent<counter>().playerIds)
+        foreach (uint fid in GameObject.Find("GameStateObj").GetComponent<GameState>().playerIds)
         {
             NetworkIdentity.spawned.TryGetValue(fid, out NetworkIdentity identity);
             bool otherIsPhone = identity.gameObject.GetComponent<PlayerScript>().type.Contains("Handheld");
@@ -257,7 +240,7 @@ public class PlayerScript : NetworkBehaviour
         }
 
         // For opponent
-        foreach (uint fid in GameObject.Find("Counter").GetComponent<counter>().playerIds)
+        foreach (uint fid in GameObject.Find("GameStateObj").GetComponent<GameState>().playerIds)
         {
             NetworkIdentity.spawned.TryGetValue(fid, out NetworkIdentity identity);
             bool otherIsPhone = identity.gameObject.GetComponent<PlayerScript>().type.Contains("Handheld");
@@ -272,21 +255,14 @@ public class PlayerScript : NetworkBehaviour
         }
 
 
-        GameObject.Find("Counter").GetComponent<counter>().playerIds.Add(id);
-
-
-
+        GameObject.Find("GameStateObj").GetComponent<GameState>().playerIds.Add(id);
 
     }
 
     // --- /Commands ----------------------
 
     // Change text when synced type variable changes
-    void changeText(string oldValue, string newValue)
-    {
-        isPC = GetComponentInChildren<TextMesh>();
-        isPC.text = type + " ct "+netId;//type;
-    }
+    
 
     // --------------- Network callbacks
 
@@ -300,7 +276,7 @@ public class PlayerScript : NetworkBehaviour
     {
         // disable client stuff
         //CmdCounterMinus();
-        GameObject.Find("Counter").GetComponent<counter>().playerIds.Remove(netId);
+        GameObject.Find("GameStateObj").GetComponent<GameState>().playerIds.Remove(netId);
         GameObject.Find(currentPos).GetComponent<Occupied>().occupied = 0;
         if (opponentPlayerId != 0)
         {
@@ -329,8 +305,9 @@ public class PlayerScript : NetworkBehaviour
     {
         // register client events, enable effects
         Input.gyro.enabled = true;
-        opponentPlayer = GameObject.Find("testTargetSphere");
+        opponentPlayer = GameObject.Find("mirrorSphere");
         
+
 
         //Check if the device running this is a desktop
         if (SystemInfo.deviceType == DeviceType.Desktop)
@@ -346,26 +323,6 @@ public class PlayerScript : NetworkBehaviour
         {
             CmdMoveTo("posPhone");
             type = "Handheld";
-            //SceneManager.LoadScene("PhoneScene", LoadSceneMode.Additive);
-            //canvas = GameObject.Find("PlayerCanvas");
-            //((Canvas)canvas.GetComponent("Canvas")).enabled = true;
-
-            //(canvas.transform.GetChild(1).gameObject.GetComponent<Button>()).onClick.AddListener(() => Debug.Log("You have clicked the button!"));
-
-            /*
-            Button[] buttons = GameObject.Find("PlayerCanvas").GetComponentsInChildren<Button>();
-
-
-            foreach (Button but in buttons)
-            {
-                if (but.gameObject.name == "Button1")
-                    but.onClick.AddListener(() => CmdSpellCast(1));
-                else if (but.gameObject.name == "Button2")
-                    but.onClick.AddListener(() => CmdSpellCast(2));
-            }
-            */
-
-            //SceneManager.MoveGameObjectToScene(player, "PhoneScene");
 
             canvas = Instantiate(canvasPre);
             
@@ -408,26 +365,35 @@ public class PlayerScript : NetworkBehaviour
             }
 
             //Ref button to this object
-            canvas.GetComponentInChildren<HoldButtonScript>().PhonePlayer = this.gameObject;
-            canvas.GetComponentInChildren<HoldButtonScript>().ps = this;
+            //canvas.GetComponentInChildren<HoldButtonScript>().PhonePlayer = this.gameObject;
+            //canvas.GetComponentInChildren<HoldButtonScript>().ps = this;
 
-            //Event add
-            EventTrigger trigger = canvas.GetComponentInChildren<EventTrigger>();
+            //Event add //Works only to add to one eventtrigger currently
+            EventTrigger[] triggers = canvas.GetComponentsInChildren<EventTrigger>();
 
-            EventTrigger.Entry entry = new EventTrigger.Entry();
-            entry.eventID = EventTriggerType.PointerDown;
-            entry.callback.AddListener((data) => { CmdsetIsHeld(true); });
-            trigger.triggers.Add(entry);
+            foreach (EventTrigger tr in triggers)
+            {
+                if (tr.gameObject.name == "HoldButton")
+                {
+                    Debug.Log("holdbutton");
+                    EventTrigger.Entry entry = new EventTrigger.Entry();
+                    entry.eventID = EventTriggerType.PointerDown;
+                    entry.callback.AddListener((data) => { CmdsetIsHeld(true); });
+                    tr.triggers.Add(entry);
 
-            EventTrigger.Entry entry2 = new EventTrigger.Entry();
-            entry2.eventID = EventTriggerType.PointerUp;
-            entry2.callback.AddListener((data) => { CmdsetIsHeld(false); });
-            trigger.triggers.Add(entry2);
+                    EventTrigger.Entry entry2 = new EventTrigger.Entry();
+                    entry2.eventID = EventTriggerType.PointerUp;
+                    entry2.callback.AddListener((data) => { CmdsetIsHeld(false); });
+                    tr.triggers.Add(entry2);
+                }
+            }
+
+            
 
 
 
         }
-
+        
         CmdsetText(type);
         CmdAddPNS(netId, type);
 
@@ -462,8 +428,9 @@ public class PlayerScript : NetworkBehaviour
             isPC.text = type + " no local "+ netId;//type;
             return;
         }
+        //GameStateObj = GameObject.Find("GameStateObj");
 
-        
+
 
 
     }

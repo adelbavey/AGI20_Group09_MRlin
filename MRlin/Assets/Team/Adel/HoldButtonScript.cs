@@ -4,25 +4,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
+//Currently does nothing, behaviour given from PlayerScript
 public class HoldButtonScript : Button
 {
 
-    public GameObject PhonePlayer = null;
-    public PlayerScript ps = null;
 
-    void OnPointerDown(PointerEventData eventData)
-    {
-        Debug.Log("mouse down");
-        PhonePlayer.GetComponent<PlayerScript>().CmdsetIsHeld(true);
-        ps.CmdsetIsHeld(true);
-        
-    }
-
-    void OnMouseUp()
-    {
-        PhonePlayer.GetComponent<PlayerScript>().CmdsetIsHeld(false);
-        ps.CmdsetIsHeld(false);
-    }
 
     // Start is called before the first frame update
     void Start()

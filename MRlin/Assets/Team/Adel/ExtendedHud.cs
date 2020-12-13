@@ -5,6 +5,8 @@ using UnityEngine;
 using Mirror;
 using Mirror.Discovery;
 
+// HUD for networking, for joining and exiting online games
+
 [DisallowMultipleComponent]
 //[AddComponentMenu("Network/NetworkManagerHUD")]
 [RequireComponent(typeof(NetworkManager))]
@@ -13,8 +15,7 @@ using Mirror.Discovery;
 public class ExtendedHud : MonoBehaviour
 {
     NetworkManager manager;
-    public Font f;
-    public GUISkin GS;
+    public GUISkin GS; //Change dynamically at runtime
 
     /// <summary>
     /// Whether to show the default control HUD at runtime.
@@ -160,6 +161,7 @@ public class ExtendedHud : MonoBehaviour
         GUILayout.EndArea();
         //GUILayout.EndHorizontal();
 
+        /*
         if (NetworkManager.singleton == null)
             return;
 
@@ -169,6 +171,7 @@ public class ExtendedHud : MonoBehaviour
         if (!NetworkClient.isConnected && !NetworkServer.active && !NetworkClient.active)
             //DrawGUI();
             return;
+        */
     }
 
     void StartButtons()
@@ -188,7 +191,6 @@ public class ExtendedHud : MonoBehaviour
 
             // Client + IP
 
-            //f.fontSize = 15;
             
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Client"))
@@ -283,20 +285,8 @@ public class ExtendedHud : MonoBehaviour
             }
         }
 #endif
-    /*
-    void OnGUI()
-    {
-        if (NetworkManager.singleton == null)
-            return;
 
-        if (NetworkServer.active || NetworkClient.active)
-            return;
-
-        if (!NetworkClient.isConnected && !NetworkServer.active && !NetworkClient.active)
-            DrawGUI();
-    }
-    */
-
+    //UNUSED
     void DrawGUI()
     {
         GUILayout.BeginHorizontal();

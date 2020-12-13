@@ -4,6 +4,7 @@ using UnityEngine;
 
 using Mirror;
 
+//Attached to position objects to decide starting position
 public class Occupied : NetworkBehaviour
 {
     [SyncVar]
