@@ -13,6 +13,8 @@ using Mirror.Discovery;
 public class ExtendedHud : MonoBehaviour
 {
     NetworkManager manager;
+    public Font f;
+    public GUISkin GS;
 
     /// <summary>
     /// Whether to show the default control HUD at runtime.
@@ -39,7 +41,31 @@ public class ExtendedHud : MonoBehaviour
         if (!showGUI)
             return;
 
-        GUILayout.BeginArea(new Rect(10 + offsetX, 40 + offsetY, 215, 9999));
+        // Change GS
+        int scale = 0;
+
+        //Check if the device running this is a desktop
+        if (SystemInfo.deviceType == DeviceType.Desktop)
+        {
+            scale = 20;
+        }
+
+        //Check if the device running this is a handheld
+        if (SystemInfo.deviceType == DeviceType.Handheld)
+        {
+            scale = 80;
+        }
+
+        
+        GS.button.fontSize = scale;
+        GS.label.fontSize = scale;
+        GS.textField.fontSize = scale;
+
+        GUI.skin = GS;
+        //
+
+        GUILayout.BeginArea(new Rect(10 + offsetX, 40 + offsetY, 600, 9999));
+        //GUILayout.BeginHorizontal();
         if (!NetworkClient.isConnected && !NetworkServer.active)
         {
             StartButtons();
@@ -65,7 +91,74 @@ public class ExtendedHud : MonoBehaviour
 
         StopButtons();
 
+        //-------------------Discovery
+
+        if (!NetworkClient.isConnected && !NetworkServer.active && !NetworkClient.active)
+        {
+
+            if (GUILayout.Button("Find Servers"))
+            {
+                discoveredServers.Clear();
+                networkDiscovery.StartDiscovery();
+            }
+
+            // LAN Host
+            if (GUILayout.Button("Start Host"))
+            {
+                discoveredServers.Clear();
+                NetworkManager.singleton.StartHost();
+                networkDiscovery.AdvertiseServer();
+            }
+
+            // Dedicated server
+            /*
+            if (GUILayout.Button("Start Server"))
+            {
+                discoveredServers.Clear();
+                NetworkManager.singleton.StartServer();
+
+                networkDiscovery.AdvertiseServer();
+            }
+            */
+
+            //GUILayout.EndHorizontal();
+
+            // show list of found server
+
+            GUILayout.Label($"Discovered Servers [{discoveredServers.Count}]:");
+
+            //Check if the device running this is a desktop
+            if (SystemInfo.deviceType == DeviceType.Desktop)
+            {
+                GUILayout.Label("some desktop");
+            }
+
+            //Check if the device running this is a handheld
+            if (SystemInfo.deviceType == DeviceType.Handheld)
+            {
+                GUILayout.Label("some handheld");
+            }
+
+            
+
+            // servers
+            scrollViewPos = GUILayout.BeginScrollView(scrollViewPos);
+
+            foreach (ServerResponse info in discoveredServers.Values)
+                if (GUILayout.Button(info.EndPoint.Address.ToString()))
+                    Connect(info);
+
+            GUILayout.EndScrollView();
+
+
+
+
+        }
+        //---------------
+
+
         GUILayout.EndArea();
+        //GUILayout.EndHorizontal();
 
         if (NetworkManager.singleton == null)
             return;
@@ -74,7 +167,8 @@ public class ExtendedHud : MonoBehaviour
             return;
 
         if (!NetworkClient.isConnected && !NetworkServer.active && !NetworkClient.active)
-            DrawGUI();
+            //DrawGUI();
+            return;
     }
 
     void StartButtons()
@@ -93,6 +187,9 @@ public class ExtendedHud : MonoBehaviour
             */
 
             // Client + IP
+
+            //f.fontSize = 15;
+            
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Client"))
             {
@@ -168,7 +265,7 @@ public class ExtendedHud : MonoBehaviour
 
 
 
-    //--------------------------------
+    //-------------------------------- Discovery
 
     readonly Dictionary<long, ServerResponse> discoveredServers = new Dictionary<long, ServerResponse>();
     Vector2 scrollViewPos = Vector2.zero;
@@ -234,6 +331,8 @@ public class ExtendedHud : MonoBehaviour
         // show list of found server
 
         GUILayout.Label($"Discovered Servers [{discoveredServers.Count}]:");
+
+        GUILayout.Label("some text");
 
         // servers
         scrollViewPos = GUILayout.BeginScrollView(scrollViewPos);
