@@ -21892,7 +21892,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4996190803129058785}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 17.3, y: 21.096, z: 29.45}
+  m_LocalPosition: {x: 3, y: 10, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2914355263987828771}
@@ -21934,7 +21934,7 @@ Rigidbody:
   m_Mass: 1
   m_Drag: 0
   m_AngularDrag: 0.05
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
@@ -21983,9 +21983,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerIndex: 1
-  opponentTransform: {fileID: 0}
+  opponentTransform: {fileID: 5912839625319837736, guid: 454e24472821a5a4380e49b8ff1e80ea, type: 3}
   gyroInteraction: 0
-  targetTransform: {fileID: 0}
+  targetTransform: {fileID: 6800009909747637037, guid: 637c204a7987cf042ac89a609a44b679, type: 3}
   wandTransform: {fileID: 3331960622462272875}
   wandMagicTransform: {fileID: 3588435718673885884}
   ourIslandTransforms:
@@ -22009,7 +22009,6 @@ MonoBehaviour:
   highlightLayer2:
     serializedVersion: 2
     m_Bits: 2048
-  gyroRayObject: {fileID: 0}
   currentHealth: 100
   oppoHealth: 0
   healthBar1: {fileID: 0}

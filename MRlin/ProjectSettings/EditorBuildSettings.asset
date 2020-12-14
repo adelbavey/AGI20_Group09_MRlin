@@ -5,12 +5,12 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Team/Adel/NetworkTest.unity
     guid: 6d5c502304216864492f5e60b563dae1
   - enabled: 0
-    path: Assets/Team/Adel/PhoneScene.unity
-    guid: aa446f0654ba4d5418ab2ac990c094ff
+    path: 
+    guid: 00000000000000000000000000000000
   - enabled: 0
     path: 
     guid: 00000000000000000000000000000000
@@ -54,5 +54,8 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Team/Jaime/Complete/MRlinExample.unity
     guid: db78316dc02918d409ad2771eae14638
+  - enabled: 1
+    path: Assets/Team/Adel/MainGame.unity
+    guid: a932dae994d60d8439e7096aa2530dc4
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 904ead38780c3164889001d56448b55c, type: 2}

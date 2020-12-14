@@ -276,8 +276,8 @@ public class PlayerScript : NetworkBehaviour
     {
         // disable client stuff
         //CmdCounterMinus();
-        GameObject.Find("GameStateObj").GetComponent<GameState>().playerIds.Remove(netId);
-        GameObject.Find(currentPos).GetComponent<Occupied>().occupied = 0;
+        if(GameObject.Find("GameStateObj") != null) GameObject.Find("GameStateObj").GetComponent<GameState>().playerIds.Remove(netId);
+        if (GameObject.Find(currentPos) != null) GameObject.Find(currentPos).GetComponent<Occupied>().occupied = 0;
         if (opponentPlayerId != 0)
         {
             opponentPlayer.GetComponent<PlayerScript>().opponentPlayerId = 0;
