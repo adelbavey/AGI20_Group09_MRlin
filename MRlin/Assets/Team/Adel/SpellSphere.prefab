@@ -165,7 +165,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  spellVFX1: {fileID: 8926484042661614526, guid: 864990e8f6a423e41bbfd0fede5c5e39, type: 3}
+  spellVFX1: {fileID: 8926484042661614526, guid: 182dbaa73176f10439fee8ccedafe6a0, type: 3}
   spellVFX2: {fileID: 8926484042661614526, guid: 779a2bfea8a30804fbfe1a5aa8f5dd07, type: 3}
   spellVFX3: {fileID: 8926484042661614526, guid: 559fbd4caead8b84bbbd240e218a2b8a, type: 3}
   color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
