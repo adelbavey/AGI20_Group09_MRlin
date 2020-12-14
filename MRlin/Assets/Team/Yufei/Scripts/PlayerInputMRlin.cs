@@ -48,9 +48,9 @@ public class PlayerInputMRlin : MonoBehaviour
     private GameObject target;
 
     [Tooltip("Initial color of the lineRenderer")]
-    public Color c1 = Color.yellow;
+    public Color c1 = Color.blue;
     [Tooltip("Final color of the lineRenderer")]
-    public Color c2 = Color.red;
+    public Color c2 = Color.cyan;
     private GameObject lineGO;
     private LineRenderer lineRenderer;
     private int i;

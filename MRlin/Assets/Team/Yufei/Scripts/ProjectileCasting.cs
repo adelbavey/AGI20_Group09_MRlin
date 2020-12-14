@@ -53,7 +53,7 @@ public class ProjectileCasting : MonoBehaviour
             return;
         }
 
-        shootingPath = (e.targetTransform.position + new Vector3(0, -1.0f, 0)) - e.wandTransform.position;
+        shootingPath = (e.islandTargetTransform.position + new Vector3(0, -1.0f, 0)) - e.wandTransform.position;
         projectileVFX.SetFloat("Distance", shootingPath.magnitude * 0.5f);
        
         Transform spellTransform = Instantiate(SpellProjectile, e.wandTransform.position, Quaternion.LookRotation(shootingPath));

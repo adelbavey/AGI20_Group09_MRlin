@@ -3,9 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.VFX;
+using UnityEngine.Animations.Rigging;
 
 public class MageControllerNew : MonoBehaviour
 {
+    [Tooltip("If this is an AI")]
+    public bool isBot = false;
     [Tooltip("1: Player 1; 2: Player 2")]
     public int playerIndex = 1;
     public Transform opponentTransform;
@@ -32,7 +35,7 @@ public class MageControllerNew : MonoBehaviour
     public class OnCastingStartsEventArgs : EventArgs
     {
         public Transform wandTransform;
-        public Transform targetTransform;
+        public Transform islandTargetTransform;
         public int spell;
     }
 
@@ -104,16 +107,22 @@ public class MageControllerNew : MonoBehaviour
 
     public magePos currentPos; // Our position
     public magePos oppoPos; // Opponent's position
+    public bool shieldProtected;
+
     private Vector3 oldMagePosition;
 
     private Transform currentTarget;
     private magePos targetPos;
 
-    public bool shieldProtected;
+    private int shieldLeft;
+    private int oppoShieldLeft;
 
     // Start is called before the first frame update
     void Start()
     {
+        headFireBig.GetComponent<VisualEffect>().Stop();
+        headFireSmall.GetComponent<VisualEffect>().Stop();
+
         if (playerIndex == 1)
         {
             headGlow.GetComponent<VisualEffect>().visualEffectAsset = headGlowVFX1;
@@ -130,10 +139,8 @@ public class MageControllerNew : MonoBehaviour
         }
         else
         {
-            Debug.LogError("Player index out of bound.");
+            Debug.LogError("Player index out of bounds.");
         }
-        headFireBig.GetComponent<VisualEffect>().Stop();
-        headFireSmall.GetComponent<VisualEffect>().Stop();
 
         rBody = GetComponent<Rigidbody>();
         currentSpell = spellElement.Void;
@@ -157,6 +164,8 @@ public class MageControllerNew : MonoBehaviour
         currentPos = magePos.Left;
         oppoPos = magePos.Left;
 
+        shieldLeft = 3;
+        oppoShieldLeft = 3;
         shieldProtected = false;
 
         for (int i = 0; i < 3; i++)
@@ -193,7 +202,7 @@ public class MageControllerNew : MonoBehaviour
         mainCamera.transform.rotation = Quaternion.LookRotation(
             Vector3.Normalize(oppoIslandTransforms[1].position - mainCamera.transform.position));
 
-        if (gyroInteraction)
+        if (gyroInteraction && !isBot)
         {
             Ray newRay = new Ray(mouseRayObject.position, mouseRayObject.forward);
 
@@ -248,7 +257,7 @@ public class MageControllerNew : MonoBehaviour
         }
 
         // Keyboard and mouse interaction
-        else
+        else if(!gyroInteraction && !isBot)
         {
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
@@ -375,18 +384,30 @@ public class MageControllerNew : MonoBehaviour
         {
             if (gestureCode == 4)
             {
-                currentPhase = gamePhase.Idle; // Skip selection and shooting
+                if (shieldLeft > 0)
+                {
+                    currentPhase = gamePhase.Idle; // Skip selection and shooting
 
-                currentSpell = spellElement.Shield;
-                shieldProtected = true;
+                    currentSpell = spellElement.Shield;
+                    shieldProtected = true;
 
-                Transform spellTransform = Instantiate(
-                    shieldTransform,
-                    transform.position,
-                    transform.rotation
-                    );
-
-                StartCoroutine(DestroyShield(spellTransform, 3.0f));
+                    Transform spellTransform = Instantiate(
+                        shieldTransform,
+                        transform.position + new Vector3(0, 0.5f, 0),
+                        transform.rotation
+                        );
+                    shieldLeft -= 1;
+                    healthBar1.setShield(shieldLeft);
+                    healthBar2.setShield(oppoShieldLeft);
+                    StartCoroutine(DestroyShield(spellTransform, 3.0f));
+                }
+                else
+                {
+                    healthBar1.setShield(shieldLeft);
+                    healthBar2.setShield(oppoShieldLeft);
+                    Debug.Log("No Shield!");
+                    currentPhase = gamePhase.Idle; // Skip selection and shooting
+                }
             }
             else
             {
@@ -439,7 +460,7 @@ public class MageControllerNew : MonoBehaviour
             OnCastingStarts?.Invoke(this, new OnCastingStartsEventArgs
             {
                 wandTransform = this.wandTransform,
-                targetTransform = this.currentTarget,
+                islandTargetTransform = this.currentTarget,
                 spell = (int)currentSpell
             });
 
@@ -492,7 +513,7 @@ public class MageControllerNew : MonoBehaviour
         }
     }
 
-    private void FixedUpdate()
+    void FixedUpdate()
     {
         // Body pointing vector
         targetVector = Vector3.Normalize(targetTransform.position - mouseRayObject.position);
@@ -516,16 +537,19 @@ public class MageControllerNew : MonoBehaviour
                 {
                     oppoHealth -= 7;
                     opponentTransform.GetComponent<MageControllerNew>().currentHealth -= 7;
+                    opponentTransform.GetComponent<Animator>().SetTrigger("Hit");
                 }
                 else if (spell == 2)
                 {
                     oppoHealth -= 10;
                     opponentTransform.GetComponent<MageControllerNew>().currentHealth -= 10;
+                    opponentTransform.GetComponent<Animator>().SetTrigger("Hit");
                 }
                 else if (spell == 3)
                 {
                     oppoHealth -= 14;
                     opponentTransform.GetComponent<MageControllerNew>().currentHealth -= 14;
+                    opponentTransform.GetComponent<Animator>().SetTrigger("Hit");
                 }
             }
         }
@@ -547,11 +571,15 @@ public class MageControllerNew : MonoBehaviour
     {
         if (win)
         {
-            Debug.Log("You won!");
+            Debug.Log("Player " + playerIndex + " won!");
+            //opponentTransform.GetChild(4).GetComponent<Rig>().weight = 0;
+            //opponentTransform.GetComponent<Animator>().SetTrigger("Dead");
         }
         else
         {
-            Debug.Log("You lost!");
+            Debug.Log("Player " + opponentTransform.GetComponent<MageControllerNew>().playerIndex + " won!");
+            transform.GetChild(4).GetComponent<Rig>().weight = 0;
+            transform.GetComponent<Animator>().SetTrigger("Dead");
         }
     }
 }
