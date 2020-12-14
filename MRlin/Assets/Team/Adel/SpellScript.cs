@@ -1,11 +1,19 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.VFX;
 
 using Mirror;
 
 public class SpellScript : NetworkBehaviour
 {
+
+    [SerializeField]
+    private VisualEffectAsset spellVFX1;
+    [SerializeField]
+    private VisualEffectAsset spellVFX2;
+    [SerializeField]
+    private VisualEffectAsset spellVFX3;
 
     [SyncVar(hook = nameof(updateColor))]
     public Color color = Color.gray;
@@ -17,6 +25,19 @@ public class SpellScript : NetworkBehaviour
     void updateColor(Color Old, Color New)
     {
         this.GetComponent<Renderer>().material.SetColor("_Color", New);
+        if (New == Color.red)
+        {
+            this.GetComponent<VisualEffect>().visualEffectAsset = spellVFX1;
+        }
+        else if (New == Color.blue) {
+
+            this.GetComponent<VisualEffect>().visualEffectAsset = spellVFX2;
+        }
+
+        else if (New == Color.green)
+        {
+            this.GetComponent<VisualEffect>().visualEffectAsset = spellVFX3;
+        }
     }
 
     void updatePlayerId(uint Old, uint New)

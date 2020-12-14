@@ -339,6 +339,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Mage_Final_Player_1
       objectReference: {fileID: 0}
+    - target: {fileID: 5522727077834720723, guid: 929c52da772a51d4e91e38f0fdda5c0f, type: 3}
+      propertyPath: m_Constraints
+      value: 14
+      objectReference: {fileID: 0}
     - target: {fileID: 5628894511165120347, guid: 929c52da772a51d4e91e38f0fdda5c0f, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -431,6 +435,10 @@ PrefabInstance:
       propertyPath: islandHighlightTransforms.Array.data[2]
       value: 
       objectReference: {fileID: 1080262950500053659}
+    - target: {fileID: 5636526817495733552, guid: 929c52da772a51d4e91e38f0fdda5c0f, type: 3}
+      propertyPath: playerScript
+      value: 
+      objectReference: {fileID: -4660354542534302634}
     - target: {fileID: 8004168960998711742, guid: 929c52da772a51d4e91e38f0fdda5c0f, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 

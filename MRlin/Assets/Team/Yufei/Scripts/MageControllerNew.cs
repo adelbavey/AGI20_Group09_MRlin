@@ -14,6 +14,7 @@ public class MageControllerNew : MonoBehaviour
     public Transform wandTransform;
     [SerializeField]
     private Transform wandMagicTransform;
+    public PlayerScript playerScript;
 
     public List<Transform> ourIslandTransforms;
     public List<Transform> oppoIslandTransforms;
@@ -168,6 +169,11 @@ public class MageControllerNew : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!playerScript.isLocalPlayer)
+        {
+            return;
+        }
+
         if (currentHealth > 0 && oppoHealth > 0)
         {
             healthBar1.setHealth(currentHealth);
@@ -190,8 +196,8 @@ public class MageControllerNew : MonoBehaviour
             Debug.LogError("Unlikely situation: both lost");
         }
 
-        mainCamera.transform.rotation = Quaternion.LookRotation(
-            Vector3.Normalize(oppoIslandTransforms[1].position - mainCamera.transform.position));
+        //mainCamera.transform.rotation = Quaternion.LookRotation(
+         //   Vector3.Normalize(oppoIslandTransforms[1].position - mainCamera.transform.position));
 
         if (gyroInteraction)
         {
@@ -207,7 +213,7 @@ public class MageControllerNew : MonoBehaviour
             StateMachineTransition();
 
             //TODO: Camera-controlled movement 
-            if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
+            if (Input.GetKeyDown(KeyCode.A) /*|| Input.GetKeyDown(KeyCode.LeftArrow)*/)
             {
                 if (currentPos == magePos.Middle)
                 {
@@ -226,7 +232,7 @@ public class MageControllerNew : MonoBehaviour
                     opponentTransform.GetComponent<MageControllerNew>().oppoPos = magePos.Middle;
                 }
             }
-            if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
+            if (Input.GetKeyDown(KeyCode.D)/* || Input.GetKeyDown(KeyCode.RightArrow)*/)
             {
                 if (currentPos == magePos.Middle)
                 {
@@ -262,7 +268,7 @@ public class MageControllerNew : MonoBehaviour
             // Both mouse and phone screen tap
             StateMachineTransition();
 
-            if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
+            if (Input.GetKeyDown(KeyCode.A) /*|| Input.GetKeyDown(KeyCode.LeftArrow)*/)
             {
                 if (currentPos == magePos.Middle)
                 {
@@ -281,7 +287,7 @@ public class MageControllerNew : MonoBehaviour
                     opponentTransform.GetComponent<MageControllerNew>().oppoPos = magePos.Middle;
                 }
             }
-            if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
+            if (Input.GetKeyDown(KeyCode.D) /*|| Input.GetKeyDown(KeyCode.RightArrow)*/)
             {
                 if (currentPos == magePos.Middle)
                 {
@@ -318,17 +324,18 @@ public class MageControllerNew : MonoBehaviour
             {
                 StartSpellingPhase(false);
                 StartSelectingPhase(true);
+                StartSelectingPhase(false);
             }
         }
         else if (currentPhase == gamePhase.Selecting)
         {
             if (currentSpell != spellElement.Void)
             {
-                SelectingPhase();
+                //SelectingPhase();
                 if (Input.GetMouseButtonDown(0))
                 {
-                    StartSelectingPhase(false);
-                    StartShootingPhase(true);
+                    //StartSelectingPhase(false);
+                    //StartShootingPhase(true);
                 }
             }
             else
@@ -417,6 +424,8 @@ public class MageControllerNew : MonoBehaviour
                         currentSpell = spellElement.Void;
                         break;
                 }
+                //DSFSADFSDF
+                if (currentSpell > 0) playerScript.CmdSpellCast((int)currentSpell);
             }
         }
         else
@@ -459,14 +468,17 @@ public class MageControllerNew : MonoBehaviour
             if (currentSpell == spellElement.Ice)
             {
                 StartCoroutine(Damage(1, 0.707f));
+                //playerScript.CmdSpellCast(1);
             }
             else if (currentSpell == spellElement.Storm)
             {
                 StartCoroutine(Damage(2, 1.0f));
+                //playerScript.CmdSpellCast(2);
             }
             else if (currentSpell == spellElement.Fire)
             {
                 StartCoroutine(Damage(3, 1.414f));
+                //playerScript.CmdSpellCast(3);
             }
         }
         else

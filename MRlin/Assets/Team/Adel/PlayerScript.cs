@@ -50,6 +50,7 @@ public class PlayerScript : NetworkBehaviour
     {
         posObject = GameObject.Find(New);
         this.transform.position = posObject.transform.position;
+        this.transform.rotation = posObject.transform.rotation;
 
     }
     GameObject posObject;
@@ -313,8 +314,14 @@ public class PlayerScript : NetworkBehaviour
         if (SystemInfo.deviceType == DeviceType.Desktop)
         {
             type = "Desktop";
-            if (GameObject.Find("pos1").GetComponent<Occupied>().occupied == 0) CmdMoveTo("pos1");
-            else CmdMoveTo("pos2");
+            if (GameObject.Find("pos1").GetComponent<Occupied>().occupied == 0) { CmdMoveTo("pos1"); 
+                GameObject.Find("Main Camera").transform.position = GameObject.Find("camPos1").transform.position;
+                GameObject.Find("Main Camera").transform.rotation = GameObject.Find("camPos1").transform.rotation;
+            }
+            else { CmdMoveTo("pos2");
+                GameObject.Find("Main Camera").transform.position = GameObject.Find("camPos2").transform.position;
+                GameObject.Find("Main Camera").transform.rotation = GameObject.Find("camPos2").transform.rotation;
+            }
 
         }
 
