@@ -310,18 +310,19 @@ public class MageControllerNew : MonoBehaviour
         }
     }
 
+    private bool lastHeld = false;
     private void StateMachineTransition()
     {
         if (currentPhase == gamePhase.Idle)
         {
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0) || playerScript.drawHeld)
             {
                 StartSpellingPhase(true);
             }
         }
         else if (currentPhase == gamePhase.Spelling)
         {
-            if (Input.GetMouseButtonUp(0))
+            if (Input.GetMouseButtonUp(0) || (!playerScript.drawHeld && playerScript.drawHeld!= lastHeld))
             {
                 StartSpellingPhase(false);
                 StartSelectingPhase(true);
@@ -351,6 +352,7 @@ public class MageControllerNew : MonoBehaviour
                 StartShootingPhase(false);
             }
         }
+        lastHeld = playerScript.drawHeld;
     }
 
     private void StartSpellingPhase(bool b)

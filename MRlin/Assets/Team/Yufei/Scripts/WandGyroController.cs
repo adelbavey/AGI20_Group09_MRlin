@@ -17,6 +17,8 @@ public class WandGyroController : MonoBehaviour
 
     private Quaternion initAttitude;
     private Quaternion initRot;
+    public PlayerScript playerScript;
+
 
 
     private void Start()
@@ -27,20 +29,34 @@ public class WandGyroController : MonoBehaviour
     }
     private bool EnableGyro()
     {
-        if (SystemInfo.supportsGyroscope)
-        {
+        //if (SystemInfo.supportsGyroscope)
+        //{
+        
             gyro = Input.gyro;
             gyro.enabled = true;
-
-            initAttitude = Input.gyro.attitude;
-            initRot = transform.rotation;
-            return true;
+        if (playerScript != null)
+        {
+            if (playerScript.connectedPlayer != null) initAttitude = playerScript.connectedPlayer.GetComponent<PlayerScript>().attitude;//Input.gyro.attitude;
+            else initAttitude = Input.gyro.attitude;
         }
-        return false;
+        else initAttitude = Input.gyro.attitude;
+        initRot = transform.rotation;
+            return true;
+        
+        return true;
+        //}
+        //return false;
     }
     private void Update()
     {
-        transform.rotation = GyroToUnity(initRot * (Quaternion.Inverse(initAttitude) * Input.gyro.attitude));
+        if(playerScript != null)
+        {
+            if (playerScript.connectedPlayer != null) transform.rotation = GyroToUnity(initRot * (Quaternion.Inverse(initAttitude) * playerScript.connectedPlayer.GetComponent<PlayerScript>().attitude/*Input.gyro.attitude*/));
+            else transform.rotation = GyroToUnity(initRot * (Quaternion.Inverse(initAttitude) * Input.gyro.attitude));
+        }
+        else transform.rotation = GyroToUnity(initRot * (Quaternion.Inverse(initAttitude) * Input.gyro.attitude));
+
+
     }
 
     private static Quaternion GyroToUnity(Quaternion q)

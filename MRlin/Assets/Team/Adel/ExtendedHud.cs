@@ -66,6 +66,7 @@ public class ExtendedHud : MonoBehaviour
         //
 
         GUILayout.BeginArea(new Rect(10 + offsetX, 40 + offsetY, 600, 9999));
+        StopButtons();
         //GUILayout.BeginHorizontal();
         if (!NetworkClient.isConnected && !NetworkServer.active)
         {
@@ -90,7 +91,7 @@ public class ExtendedHud : MonoBehaviour
             }
         }
 
-        StopButtons();
+        //StopButtons();
 
         //-------------------Discovery
 
@@ -131,13 +132,18 @@ public class ExtendedHud : MonoBehaviour
             //Check if the device running this is a desktop
             if (SystemInfo.deviceType == DeviceType.Desktop)
             {
-                GUILayout.Label("some desktop");
+                GUILayout.Label("Hello, and welcome to MRlin!\n" +
+                    "In order to play the game, press start host to start a game\n" +
+                    "If you and the second player are in the same lan, you can use Find Server to find the server of the one who's hosting, and join\n" +
+                    "If two instances of the game are played on one pc, you click Client with 'localhost' on, and if they are different pcs not in a Lan, the ip of the host is written instead of 'localhost'\n\n" +
+                    "The same logic as above is used to join phone clients. The phone is attached to the first free PC player who joined the game.\n\n" +
+                    "Controls: spell 1 = Z, spell 2 = X, spell 3 = C, Left/Right key to move (if camera tracking not on), Turn on/off camera tracking = T");
             }
 
             //Check if the device running this is a handheld
             if (SystemInfo.deviceType == DeviceType.Handheld)
             {
-                GUILayout.Label("some handheld");
+                //GUILayout.Label("some handheld");
             }
 
             

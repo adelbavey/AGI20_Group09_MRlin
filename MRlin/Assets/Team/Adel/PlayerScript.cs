@@ -23,6 +23,7 @@ public class PlayerScript : NetworkBehaviour
     GameObject canvas;
     public GameObject castObject;
     FruitTrailRenderer ftr;
+    public bool toTrack;
 
     //Sync type (Desktop/Handeld) between all clients
     [SyncVar(hook=nameof(changeText))]
@@ -34,10 +35,12 @@ public class PlayerScript : NetworkBehaviour
     }
 
     [SyncVar(hook=nameof(updateHealth))]
-    public int health = 50;
+    public int health = 80;
     void updateHealth(int Old, int New)
     {
         GameObject.Find("GameStateObj").GetComponent<GameState>().changeText(0, 0);
+        this.transform.Find("Mage_Final_Player_1").gameObject.GetComponent<MageControllerNew>().healthBar1.setHealth(health);
+        Debug.Log("health lost");
     }
 
     [SyncVar(hook = nameof(updateInternalPos))]
@@ -112,6 +115,7 @@ public class PlayerScript : NetworkBehaviour
     void CmdDecreaseHealth(int n)
     {
         health -= n;
+        //this.transform.Find("HealthBarCanvas_Player1").Find("Health Bar 1").gameObject.GetComponent<HealthBar>().setHealth(health);
     }
 
     [Command(ignoreAuthority = true)]
@@ -312,6 +316,8 @@ public class PlayerScript : NetworkBehaviour
     {
         // register client events, enable effects
         //CmdCounterMinus();
+        GameObject.Destroy(canvas);
+        //canvas.Destroy();
     }
 
     public override void OnStartLocalPlayer()
@@ -344,6 +350,7 @@ public class PlayerScript : NetworkBehaviour
         {
             CmdMoveTo("posPhone");
             type = "Handheld";
+            GameObject.Find("ColorTracker").SetActive(false);
 
             canvas = Instantiate(canvasPre);
             
@@ -466,7 +473,7 @@ public class PlayerScript : NetworkBehaviour
         }
 
         //Register tracker
-        if (type.Contains("Desktop"))
+        if (type.Contains("Desktop") && toTrack)
         {
             Vector3 positionTarget = ftr.getTargetPos();
             int x = (int)positionTarget.x;
@@ -483,7 +490,9 @@ public class PlayerScript : NetworkBehaviour
             //    connectedPlayer.GetComponent<PlayerScript>().CmdCounterMousePlus();
             //else CmdCounterMousePlus();
         }
-        
+
+        if (Input.GetKeyDown(KeyCode.T))
+            toTrack = !toTrack;
 
         if (Input.GetKeyDown(KeyCode.Z))
             CmdSpellCast(1);
