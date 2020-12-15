@@ -13,7 +13,7 @@ public class Movement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        ftr = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<FruitTrailRenderer>();
+        ftr = GameObject.FindGameObjectWithTag("TrackCamera").GetComponent<FruitTrailRenderer>();
  
     }
 

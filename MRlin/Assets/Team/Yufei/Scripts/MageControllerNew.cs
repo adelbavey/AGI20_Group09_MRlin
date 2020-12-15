@@ -169,6 +169,7 @@ public class MageControllerNew : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (playerScript == null) return;
         if (!playerScript.isLocalPlayer)
         {
             return;

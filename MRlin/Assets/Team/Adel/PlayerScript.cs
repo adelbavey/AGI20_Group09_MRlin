@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEditor;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
+using Vexpot.Integration;
+using Vexpot.ColorTrackerDemo;
 
 using Mirror;
 using UnityEngine.UI;
@@ -20,6 +22,7 @@ public class PlayerScript : NetworkBehaviour
     public GameObject canvasPre; //Prefab
     GameObject canvas;
     public GameObject castObject;
+    FruitTrailRenderer ftr;
 
     //Sync type (Desktop/Handeld) between all clients
     [SyncVar(hook=nameof(changeText))]
@@ -119,6 +122,15 @@ public class PlayerScript : NetworkBehaviour
         temp += incrementPos;
         if (temp < 0 || temp >= posObject.transform.childCount) return;
         internalPos = temp;
+
+    }
+
+    [Command(ignoreAuthority = true)]
+    void CmdInternalMoveTo(int pos)
+    {
+
+        if (pos < 0 || pos >= posObject.transform.childCount) return;
+        internalPos = pos;
 
     }
 
@@ -323,6 +335,8 @@ public class PlayerScript : NetworkBehaviour
                 GameObject.Find("Main Camera").transform.rotation = GameObject.Find("camPos2").transform.rotation;
             }
 
+            ftr = GameObject.FindGameObjectWithTag("TrackCamera").GetComponent<FruitTrailRenderer>();
+
         }
 
         //Check if the device running this is a handheld
@@ -449,6 +463,17 @@ public class PlayerScript : NetworkBehaviour
         if (!isLocalPlayer)
         {
             return;
+        }
+
+        //Register tracker
+        if (type.Contains("Desktop"))
+        {
+            Vector3 positionTarget = ftr.getTargetPos();
+            int x = (int)positionTarget.x;
+
+            if (x < 1) CmdInternalMoveTo(2);
+            else if (x > 3) CmdInternalMoveTo(0);
+            else CmdInternalMoveTo(1);
         }
 
         // Register mouse down
