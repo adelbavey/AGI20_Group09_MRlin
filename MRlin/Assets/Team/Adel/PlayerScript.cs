@@ -350,7 +350,8 @@ public class PlayerScript : NetworkBehaviour
         {
             CmdMoveTo("posPhone");
             type = "Handheld";
-            GameObject.Find("ColorTracker").SetActive(false);
+            //GameObject.Find("ColorTracker").SetActive(false);
+            toTrack = false;
 
             canvas = Instantiate(canvasPre);
             

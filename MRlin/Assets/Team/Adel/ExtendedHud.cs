@@ -55,6 +55,7 @@ public class ExtendedHud : MonoBehaviour
         if (SystemInfo.deviceType == DeviceType.Handheld)
         {
             scale = 80;
+            //GameObject.Find("ColorTracker").SetActive(false);
         }
 
         
@@ -98,7 +99,7 @@ public class ExtendedHud : MonoBehaviour
         if (!NetworkClient.isConnected && !NetworkServer.active && !NetworkClient.active)
         {
 
-            if (GUILayout.Button("Find Servers"))
+            if (GUILayout.Button("Find (LAN) Servers"))
             {
                 discoveredServers.Clear();
                 networkDiscovery.StartDiscovery();
@@ -133,9 +134,9 @@ public class ExtendedHud : MonoBehaviour
             if (SystemInfo.deviceType == DeviceType.Desktop)
             {
                 GUILayout.Label("Hello, and welcome to MRlin!\n" +
-                    "In order to play the game, press start host to start a game\n" +
-                    "If you and the second player are in the same lan, you can use Find Server to find the server of the one who's hosting, and join\n" +
-                    "If two instances of the game are played on one pc, you click Client with 'localhost' on, and if they are different pcs not in a Lan, the ip of the host is written instead of 'localhost'\n\n" +
+                    "In order to play the game, press Start Host to start a game.\n" +
+                    "If you and the second player are in the same LAN, you can use Find (LAN) Server to find the server of the one who's hosting, and join.\n" +
+                    "If two instances of the game are played on one pc, you click Join IP with 'localhost' on, and if they are different pcs not in a LAN, the ip of the host is written instead of 'localhost'.\n\n" +
                     "The same logic as above is used to join phone clients. The phone is attached to the first free PC player who joined the game.\n\n" +
                     "Controls: spell 1 = Z, spell 2 = X, spell 3 = C, Left/Right key to move (if camera tracking not on), Turn on/off camera tracking = T");
             }
@@ -199,7 +200,7 @@ public class ExtendedHud : MonoBehaviour
 
             
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Client"))
+            if (GUILayout.Button("Join IP"))
             {
                 manager.StartClient();
             }
