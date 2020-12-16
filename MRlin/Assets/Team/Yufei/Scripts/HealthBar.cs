@@ -27,7 +27,7 @@ public class HealthBar : MonoBehaviour
         if (this.health != health)
         {
             this.health = health;
-            StartCoroutine(Shake(0.5f, 5.0f));
+            StartCoroutine(Shake(0.5f, 8.0f));
         }
     }
 

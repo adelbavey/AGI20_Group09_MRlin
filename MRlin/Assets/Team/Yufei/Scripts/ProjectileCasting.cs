@@ -6,7 +6,8 @@ using UnityEngine.VFX;
 
 public class ProjectileCasting : MonoBehaviour
 {
-    public AudioSource castingAudio;
+    [SerializeField]
+    private AudioSource castingAudio;
     [SerializeField]
     private Transform SpellProjectile;
     [SerializeField]

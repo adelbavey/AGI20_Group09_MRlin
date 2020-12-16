@@ -10,10 +10,11 @@ public class MageControllerNew : MonoBehaviour
 {
     [Tooltip("If this is an AI")]
     public bool isBot = false;
+    [Tooltip("If this is controlled by a phone")]
+    public bool gyroInteraction = false;
     [Tooltip("1: Player 1; 2: Player 2")]
     public int playerIndex = 1;
     public Transform opponentTransform;
-    public bool gyroInteraction = false;
     public Transform targetTransform;
     public Transform wandTransform;
     [SerializeField]
@@ -87,6 +88,10 @@ public class MageControllerNew : MonoBehaviour
 
     [SerializeField]
     private Transform shieldTransform;
+
+    public AudioSource hitAudio;
+    [SerializeField]
+    private AudioSource shieldAudio;
 
     private ParticleSystem wandMagicParticle;
     private AudioSource wandMagicSound;
@@ -245,7 +250,6 @@ public class MageControllerNew : MonoBehaviour
                     // Both mouse and phone screen tap
                     StateMachineTransition();
 
-
                     //if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
                     //{
                     //    moveLeft();
@@ -255,52 +259,48 @@ public class MageControllerNew : MonoBehaviour
                     //    moveRight();
                     //}
 
-
                     //Camera-controlled movement
                     Vector3 positionTarget = ftr.getTargetPos();
                     int x = (int)positionTarget.x;
 
-                    Debug.Log(x);
-                    if (!justMoved)
+                    //Debug.Log(x);
+
+                    if (x <= -1)
                     {
-                        justMoved = true;
-                        StartCoroutine(justMovedChange());
-                        if (x < 1)
+                        if (currentPos == magePos.Middle)
                         {
-                            if (currentPos == magePos.Middle)
-                            {
-                                moveLeft();
-                            }
-                            else if (currentPos == magePos.Right)
-                            {
-                                moveLeft();
-                                moveLeft();
-                            }
+                            moveLeft();
                         }
-                        else if (x > 3)
+                        else if (currentPos == magePos.Right)
                         {
-                            if (currentPos == magePos.Middle)
-                            {
-                                moveRight();
-                            }
-                            else if (currentPos == magePos.Left)
-                            {
-                                moveRight();
-                                moveRight();
-                            }
-                        }
-                        else
-                        {
-                            if (currentPos == magePos.Left)
-                            {
-                                moveRight();
-                            }
-                            else if (currentPos == magePos.Right)
-                            {
-                                moveLeft();
-                            }
+                            moveLeft();
+                            moveLeft();
                         }
                     }
+                    else if (x >= 2)
+                    {
+                        if (currentPos == magePos.Middle)
+                        {
+                            moveRight();
+                        }
+                        else if (currentPos == magePos.Left)
+                        {
+                            moveRight();
+                            moveRight();
+                        }
+                    }
+                    else
+                    {
+                        if (currentPos == magePos.Left)
+                        {
+                            moveRight();
+                        }
+                        else if (currentPos == magePos.Right)
+                        {
+                            moveLeft();
+                        }
+                    }
+
                 }
 
                 // Keyboard and mouse interaction
@@ -342,7 +342,6 @@ public class MageControllerNew : MonoBehaviour
 
                 if (oldMoveFactor != moveFactor)
                 {
-                    Debug.Log(moveFactor);
                     if (moveFactor <= 0.5f)
                     {
                         oldMoveFactor = moveFactor;
@@ -375,41 +374,71 @@ public class MageControllerNew : MonoBehaviour
 
     private void moveRight()
     {
-        if (currentPos == magePos.Middle)
+        if (currentPhase != gamePhase.Spelling)
         {
-            oldMagePosition = transform.position;
-            transform.position = ourIslandTransforms[2].position + (oldMagePosition - ourIslandTransforms[1].position);
-            if (!isBot) mainCamera.transform.position += transform.position - oldMagePosition;
-            currentPos = magePos.Right;
-            opponentTransform.GetComponent<MageControllerNew>().oppoPos = magePos.Right;
-        }
-        else if (currentPos == magePos.Left)
-        {
-            oldMagePosition = transform.position;
-            transform.position = ourIslandTransforms[1].position + (oldMagePosition - ourIslandTransforms[0].position);
-            if (!isBot) mainCamera.transform.position += transform.position - oldMagePosition;
-            currentPos = magePos.Middle;
-            opponentTransform.GetComponent<MageControllerNew>().oppoPos = magePos.Middle;
+            if (currentPos == magePos.Middle)
+            {
+                if (!justMoved)
+                {
+                    justMoved = true;
+                    StartCoroutine(justMovedChange());
+
+                    oldMagePosition = transform.position;
+                    transform.position = ourIslandTransforms[2].position + (oldMagePosition - ourIslandTransforms[1].position);
+                    if (!isBot) mainCamera.transform.position += transform.position - oldMagePosition;
+                    currentPos = magePos.Right;
+                    opponentTransform.GetComponent<MageControllerNew>().oppoPos = magePos.Right;
+                }
+            }
+            else if (currentPos == magePos.Left)
+            {
+                if (!justMoved)
+                {
+                    justMoved = true;
+                    StartCoroutine(justMovedChange());
+
+                    oldMagePosition = transform.position;
+                    transform.position = ourIslandTransforms[1].position + (oldMagePosition - ourIslandTransforms[0].position);
+                    if (!isBot) mainCamera.transform.position += transform.position - oldMagePosition;
+                    currentPos = magePos.Middle;
+                    opponentTransform.GetComponent<MageControllerNew>().oppoPos = magePos.Middle;
+                }
+            }
         }
     }
 
     private void moveLeft()
     {
-        if (currentPos == magePos.Middle)
+        if (currentPhase != gamePhase.Spelling)
         {
-            oldMagePosition = transform.position;
-            transform.position = ourIslandTransforms[0].position + (oldMagePosition - ourIslandTransforms[1].position);
-            if (!isBot) mainCamera.transform.position += transform.position - oldMagePosition;
-            currentPos = magePos.Left;
-            opponentTransform.GetComponent<MageControllerNew>().oppoPos = magePos.Left;
-        }
-        else if (currentPos == magePos.Right)
-        {
-            oldMagePosition = transform.position;
-            transform.position = ourIslandTransforms[1].position + (oldMagePosition - ourIslandTransforms[2].position);
-            if (!isBot) mainCamera.transform.position += transform.position - oldMagePosition;
-            currentPos = magePos.Middle;
-            opponentTransform.GetComponent<MageControllerNew>().oppoPos = magePos.Middle;
+            if (currentPos == magePos.Middle)
+            {
+                if (!justMoved)
+                {
+                    justMoved = true;
+                    StartCoroutine(justMovedChange());
+
+                    oldMagePosition = transform.position;
+                    transform.position = ourIslandTransforms[0].position + (oldMagePosition - ourIslandTransforms[1].position);
+                    if (!isBot) mainCamera.transform.position += transform.position - oldMagePosition;
+                    currentPos = magePos.Left;
+                    opponentTransform.GetComponent<MageControllerNew>().oppoPos = magePos.Left;
+                }
+            }
+            else if (currentPos == magePos.Right)
+            {
+                if (!justMoved)
+                {
+                    justMoved = true;
+                    StartCoroutine(justMovedChange());
+
+                    oldMagePosition = transform.position;
+                    transform.position = ourIslandTransforms[1].position + (oldMagePosition - ourIslandTransforms[2].position);
+                    if (!isBot) mainCamera.transform.position += transform.position - oldMagePosition;
+                    currentPos = magePos.Middle;
+                    opponentTransform.GetComponent<MageControllerNew>().oppoPos = magePos.Middle;
+                }
+            }
         }
     }
 
@@ -449,6 +478,7 @@ public class MageControllerNew : MonoBehaviour
                 {
                     currentSpell = spellElement.Shield;
                     shieldProtected = true;
+                    shieldAudio.Play();
 
                     Transform spellTransform = Instantiate(
                         shieldTransform,
@@ -586,6 +616,7 @@ public class MageControllerNew : MonoBehaviour
 
                     currentSpell = spellElement.Shield;
                     shieldProtected = true;
+                    shieldAudio.Play();
 
                     Transform spellTransform = Instantiate(
                         shieldTransform,
@@ -723,6 +754,7 @@ public class MageControllerNew : MonoBehaviour
         {
             rBody.MoveRotation(Quaternion.Euler(new Vector3(0, 0.0f * Mathf.Atan2(targetVector.x, targetVector.z) * Mathf.Rad2Deg, 0)));
         }
+
         spineController.rotation = Quaternion.Euler(new Vector3(0, 1.0f * Mathf.Atan2(targetVector.x, targetVector.z) * Mathf.Rad2Deg, 0));
 
         rightHandController.position = rightHandTarget.position;
@@ -736,6 +768,13 @@ public class MageControllerNew : MonoBehaviour
         {
             if (oppoPos == targetPos)
             {
+                opponentTransform.GetComponent<MageControllerNew>().hitAudio.volume = 1.0f;
+                opponentTransform.GetComponent<MageControllerNew>().hitAudio.Play();
+                if (opponentTransform.GetComponent<MageControllerNew>().gyroInteraction)
+                {
+                    opponentTransform.GetComponent<MageControllerNew>().vibratePhone();
+                }
+
                 if (spell == 1)
                 {
                     oppoHealth -= 7;
@@ -772,11 +811,11 @@ public class MageControllerNew : MonoBehaviour
 
     private IEnumerator moveFactorGen()
     {
-        yield return new WaitForSeconds(4);
+        yield return new WaitForSeconds(5);
         while (true)
         {
             moveFactor = UnityEngine.Random.Range(0.0f, 1.0f);
-            yield return new WaitForSeconds(4);
+            yield return new WaitForSeconds(5);
         }
     }
 
@@ -786,7 +825,7 @@ public class MageControllerNew : MonoBehaviour
         while (true)
         {
             spellFactor = UnityEngine.Random.Range(0.0f, 4.0f);
-            yield return new WaitForSeconds(4);
+            yield return new WaitForSeconds(5);
         }
     }
 
@@ -808,9 +847,19 @@ public class MageControllerNew : MonoBehaviour
         else
         {
             Debug.Log("Player " + opponentTransform.GetComponent<MageControllerNew>().playerIndex + " won!");
-            transform.GetChild(4).GetComponent<Rig>().weight = 0;
+            transform.GetChild(3).GetComponent<Rig>().weight = 0;
             transform.GetComponent<Animator>().SetTrigger("Dead");
         }
+    }
+
+    public Vector3 getTargetPos()
+    {
+        return targetTransform.position;
+    }
+
+    public void vibratePhone()
+    {
+        Handheld.Vibrate();
     }
 }
 

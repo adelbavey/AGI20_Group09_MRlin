@@ -68,7 +68,7 @@ public class PlayerInputMRlin : MonoBehaviour
     [SerializeField]
     private int widhtTextLine = 4;
 
-    private void Start()
+    void Start()
     {
         this.lineGO = new GameObject("Line");
         this.lineGO.AddComponent<LineRenderer>();
@@ -98,7 +98,7 @@ public class PlayerInputMRlin : MonoBehaviour
     }
 
 
-    private void Update()
+    void Update()
     {
         //if (!usingGyro && Input.GetMouseButtonUp(0))
         //{
@@ -254,7 +254,7 @@ public class PlayerInputMRlin : MonoBehaviour
                     if (Input.GetTouch(i).phase == TouchPhase.Began || Input.GetTouch(i).phase == TouchPhase.Moved || Input.GetTouch(i).phase == TouchPhase.Stationary)
                     {
                         // Here it is necessary to multiply by some number between 70 and 130 so the gesture is big enough in order to be processed
-                        Vector3 pos = this.GetComponent<GyroController>().getCursorPos() * 100;
+                        Vector3 pos = this.GetComponent<MageControllerNew>().getTargetPos() * 10;
 
                         //Modify when adding a new pattern
                         gestureCO.setIsGesturing(true);
