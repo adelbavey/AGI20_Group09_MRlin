@@ -125,6 +125,7 @@ public class MageControllerNew : MonoBehaviour
     private float spellFactor;
 
     private bool gameOver;
+    private bool justMoved;
 
     // Camera movement
     FruitTrailRenderer ftr;
@@ -196,6 +197,7 @@ public class MageControllerNew : MonoBehaviour
         }
 
         ftr = GameObject.FindGameObjectWithTag("TrackCamera").GetComponent<FruitTrailRenderer>();
+        justMoved = false;
     }
 
     // Update is called once per frame
@@ -244,42 +246,60 @@ public class MageControllerNew : MonoBehaviour
                     StateMachineTransition();
 
 
-                    if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
-                    {
-                        moveLeft();
-                    }
-                    if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
-                    {
-                        moveRight();
-                    }
+                    //if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
+                    //{
+                    //    moveLeft();
+                    //}
+                    //if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
+                    //{
+                    //    moveRight();
+                    //}
+
 
                     //Camera-controlled movement
                     Vector3 positionTarget = ftr.getTargetPos();
                     int x = (int)positionTarget.x;
 
-                    if (x < 1)
+                    Debug.Log(x);
+                    if (!justMoved)
                     {
-                        oldMagePosition = transform.position;
-                        transform.position = ourIslandTransforms[2].position + (oldMagePosition - ourIslandTransforms[1].position);
-                        if (!isBot) mainCamera.transform.position += transform.position - oldMagePosition;
-                        currentPos = magePos.Right;
-                        opponentTransform.GetComponent<MageControllerNew>().oppoPos = magePos.Right;
-                    }
-                    else if (x > 3)
-                    {
-                        oldMagePosition = transform.position;
-                        transform.position = ourIslandTransforms[0].position + (oldMagePosition - ourIslandTransforms[1].position);
-                        if (!isBot) mainCamera.transform.position += transform.position - oldMagePosition;
-                        currentPos = magePos.Left;
-                        opponentTransform.GetComponent<MageControllerNew>().oppoPos = magePos.Left;
-                    }
-                    else
-                    {
-                        oldMagePosition = transform.position;
-                        transform.position = ourIslandTransforms[1].position + (oldMagePosition - ourIslandTransforms[0].position);
-                        if (!isBot) mainCamera.transform.position += transform.position - oldMagePosition;
-                        currentPos = magePos.Middle;
-                        opponentTransform.GetComponent<MageControllerNew>().oppoPos = magePos.Middle;
+                        justMoved = true;
+                        StartCoroutine(justMovedChange());
+                        if (x < 1)
+                        {
+                            if (currentPos == magePos.Middle)
+                            {
+                                moveLeft();
+                            }
+                            else if (currentPos == magePos.Right)
+                            {
+                                moveLeft();
+                                moveLeft();
+                            }
+                        }
+                        else if (x > 3)
+                        {
+                            if (currentPos == magePos.Middle)
+                            {
+                                moveRight();
+                            }
+                            else if (currentPos == magePos.Left)
+                            {
+                                moveRight();
+                                moveRight();
+                            }
+                        }
+                        else
+                        {
+                            if (currentPos == magePos.Left)
+                            {
+                                moveRight();
+                            }
+                            else if (currentPos == magePos.Right)
+                            {
+                                moveLeft();
+                            }
+                        }
                     }
                 }
 
@@ -768,6 +788,12 @@ public class MageControllerNew : MonoBehaviour
             spellFactor = UnityEngine.Random.Range(0.0f, 4.0f);
             yield return new WaitForSeconds(4);
         }
+    }
+
+    private IEnumerator justMovedChange()
+    {
+        yield return new WaitForSeconds(0.5f);
+        justMoved = false;
     }
 
     private void endGame(bool win)

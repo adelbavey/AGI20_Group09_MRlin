@@ -49,7 +49,7 @@ EditorBuildSettings:
     path: Assets/Team/Jaime/NetworkTest/PhoneApp/2. ConnectingScreen.unity
     guid: 794004397af8ec34ca2d842d5174c9ee
   - enabled: 0
-    path: Assets/Team/Yufei/Scenes/Interaction Testing 1.unity
+    path: Assets/Team/Yufei/Scenes/Single Player Mode.unity
     guid: 25b9715909c1a5940968f29676602e65
   - enabled: 1
     path: Assets/Team/Jaime/Complete/MRlinExample.unity
