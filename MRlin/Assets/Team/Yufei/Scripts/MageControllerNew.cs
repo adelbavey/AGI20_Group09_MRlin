@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.VFX;
 using UnityEngine.Animations.Rigging;
+using Vexpot.ColorTrackerDemo;
 
 public class MageControllerNew : MonoBehaviour
 {
@@ -117,9 +118,22 @@ public class MageControllerNew : MonoBehaviour
     private int shieldLeft;
     private int oppoShieldLeft;
 
+    // Bot auto control
+    private float oldMoveFactor;
+    private float moveFactor;
+    private float oldSpellFactor;
+    private float spellFactor;
+
+    private bool gameOver;
+
+    // Camera movement
+    FruitTrailRenderer ftr;
+
     // Start is called before the first frame update
     void Start()
     {
+        gameOver = false;
+
         headFireBig.GetComponent<VisualEffect>().Stop();
         headFireSmall.GetComponent<VisualEffect>().Stop();
 
@@ -172,6 +186,16 @@ public class MageControllerNew : MonoBehaviour
         {
             islandHighlightTransforms[i].GetComponent<MeshRenderer>().enabled = false;
         }
+
+        if (isBot)
+        {
+            oldMoveFactor = 0.5f;
+            moveFactor = 0.5f;
+            StartCoroutine(moveFactorGen());
+            StartCoroutine(spellFactorGen());
+        }
+
+        ftr = GameObject.FindGameObjectWithTag("TrackCamera").GetComponent<FruitTrailRenderer>();
     }
 
     // Update is called once per frame
@@ -199,115 +223,267 @@ public class MageControllerNew : MonoBehaviour
             Debug.LogError("Unlikely situation: both lost");
         }
 
-        mainCamera.transform.rotation = Quaternion.LookRotation(
-            Vector3.Normalize(oppoIslandTransforms[1].position - mainCamera.transform.position));
-
-        if (gyroInteraction && !isBot)
+        if (!gameOver)
         {
-            Ray newRay = new Ray(mouseRayObject.position, mouseRayObject.forward);
-
-            RaycastHit hit;
-            if (Physics.Raycast(newRay, out hit, Mathf.Infinity, mouseAimMask))
+            if (!isBot)
             {
-                targetTransform.position = hit.point;
+                mainCamera.transform.rotation = Quaternion.LookRotation(
+                    Vector3.Normalize(oppoIslandTransforms[1].position - mainCamera.transform.position));
+
+                if (gyroInteraction)
+                {
+                    Ray newRay = new Ray(mouseRayObject.position, mouseRayObject.forward);
+
+                    RaycastHit hit;
+                    if (Physics.Raycast(newRay, out hit, Mathf.Infinity, mouseAimMask))
+                    {
+                        targetTransform.position = hit.point;
+                    }
+
+                    // Both mouse and phone screen tap
+                    StateMachineTransition();
+
+
+                    if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
+                    {
+                        moveLeft();
+                    }
+                    if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
+                    {
+                        moveRight();
+                    }
+
+                    //Camera-controlled movement
+                    Vector3 positionTarget = ftr.getTargetPos();
+                    int x = (int)positionTarget.x;
+
+                    if (x < 1)
+                    {
+                        oldMagePosition = transform.position;
+                        transform.position = ourIslandTransforms[2].position + (oldMagePosition - ourIslandTransforms[1].position);
+                        if (!isBot) mainCamera.transform.position += transform.position - oldMagePosition;
+                        currentPos = magePos.Right;
+                        opponentTransform.GetComponent<MageControllerNew>().oppoPos = magePos.Right;
+                    }
+                    else if (x > 3)
+                    {
+                        oldMagePosition = transform.position;
+                        transform.position = ourIslandTransforms[0].position + (oldMagePosition - ourIslandTransforms[1].position);
+                        if (!isBot) mainCamera.transform.position += transform.position - oldMagePosition;
+                        currentPos = magePos.Left;
+                        opponentTransform.GetComponent<MageControllerNew>().oppoPos = magePos.Left;
+                    }
+                    else
+                    {
+                        oldMagePosition = transform.position;
+                        transform.position = ourIslandTransforms[1].position + (oldMagePosition - ourIslandTransforms[0].position);
+                        if (!isBot) mainCamera.transform.position += transform.position - oldMagePosition;
+                        currentPos = magePos.Middle;
+                        opponentTransform.GetComponent<MageControllerNew>().oppoPos = magePos.Middle;
+                    }
+                }
+
+                // Keyboard and mouse interaction
+                else if (!gyroInteraction)
+                {
+                    Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+                    RaycastHit hit;
+                    // Mouse aim hit to invisible mouse target (Mouse Target layer)
+                    if (Physics.Raycast(ray, out hit, Mathf.Infinity, mouseAimMask))
+                    {
+                        targetTransform.position = hit.point;
+                        mouseRayObject.rotation = Quaternion.LookRotation(ray.direction);
+                    }
+
+                    // Both mouse and phone screen tap
+                    StateMachineTransition();
+
+                    if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
+                    {
+                        moveLeft();
+                    }
+                    if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
+                    {
+                        moveRight();
+                    }
+                }
             }
-
-            // Both mouse and phone screen tap
-            StateMachineTransition();
-
-            //TODO: Camera-controlled movement 
-            if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
+            else // Bot behaviors
             {
-                if (currentPos == magePos.Middle)
+                RaycastHit hit;
+                if (Physics.Raycast(mouseRayObject.position, targetVector, out hit, Mathf.Infinity, highlightLayer1))
                 {
-                    oldMagePosition = transform.position;
-                    transform.position = ourIslandTransforms[0].position + (oldMagePosition - ourIslandTransforms[1].position);
-                    mainCamera.transform.position += transform.position - oldMagePosition;
-                    currentPos = magePos.Left;
-                    opponentTransform.GetComponent<MageControllerNew>().oppoPos = magePos.Left;
+                    currentTarget = hit.transform;
                 }
-                else if (currentPos == magePos.Right)
+
+                targetTransform.position = islandHighlightTransforms[2 - (int)oppoPos].position;
+
+                mouseRayObject.rotation = Quaternion.LookRotation(targetTransform.position - mouseRayObject.position);
+
+                if (oldMoveFactor != moveFactor)
                 {
-                    oldMagePosition = transform.position;
-                    transform.position = ourIslandTransforms[1].position + (oldMagePosition - ourIslandTransforms[2].position);
-                    mainCamera.transform.position += transform.position - oldMagePosition;
-                    currentPos = magePos.Middle;
-                    opponentTransform.GetComponent<MageControllerNew>().oppoPos = magePos.Middle;
+                    Debug.Log(moveFactor);
+                    if (moveFactor <= 0.5f)
+                    {
+                        oldMoveFactor = moveFactor;
+                        if (currentPos == magePos.Left)
+                        {
+                            moveRight();
+                        }
+                        else
+                        {
+                            moveLeft();
+                        }
+                    }
+                    else
+                    {
+                        oldMoveFactor = moveFactor;
+                        if (currentPos == magePos.Right)
+                        {
+                            moveLeft();
+                        }
+                        else
+                        {
+                            moveRight();
+                        }
+                    }
                 }
-            }
-            if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
-            {
-                if (currentPos == magePos.Middle)
-                {
-                    oldMagePosition = transform.position;
-                    transform.position = ourIslandTransforms[2].position + (oldMagePosition - ourIslandTransforms[1].position);
-                    mainCamera.transform.position += transform.position - oldMagePosition;
-                    currentPos = magePos.Right;
-                    opponentTransform.GetComponent<MageControllerNew>().oppoPos = magePos.Right;
-                }
-                else if (currentPos == magePos.Left)
-                {
-                    oldMagePosition = transform.position;
-                    transform.position = ourIslandTransforms[1].position + (oldMagePosition - ourIslandTransforms[0].position);
-                    mainCamera.transform.position += transform.position - oldMagePosition;
-                    currentPos = magePos.Middle;
-                    opponentTransform.GetComponent<MageControllerNew>().oppoPos = magePos.Middle;
-                }
+                botShooting();
             }
         }
+    }
 
-        // Keyboard and mouse interaction
-        else if(!gyroInteraction && !isBot)
+    private void moveRight()
+    {
+        if (currentPos == magePos.Middle)
         {
-            Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            // Mouse aim hit to invisible mouse target (Mouse Target layer)
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity, mouseAimMask))
+            oldMagePosition = transform.position;
+            transform.position = ourIslandTransforms[2].position + (oldMagePosition - ourIslandTransforms[1].position);
+            if (!isBot) mainCamera.transform.position += transform.position - oldMagePosition;
+            currentPos = magePos.Right;
+            opponentTransform.GetComponent<MageControllerNew>().oppoPos = magePos.Right;
+        }
+        else if (currentPos == magePos.Left)
+        {
+            oldMagePosition = transform.position;
+            transform.position = ourIslandTransforms[1].position + (oldMagePosition - ourIslandTransforms[0].position);
+            if (!isBot) mainCamera.transform.position += transform.position - oldMagePosition;
+            currentPos = magePos.Middle;
+            opponentTransform.GetComponent<MageControllerNew>().oppoPos = magePos.Middle;
+        }
+    }
+
+    private void moveLeft()
+    {
+        if (currentPos == magePos.Middle)
+        {
+            oldMagePosition = transform.position;
+            transform.position = ourIslandTransforms[0].position + (oldMagePosition - ourIslandTransforms[1].position);
+            if (!isBot) mainCamera.transform.position += transform.position - oldMagePosition;
+            currentPos = magePos.Left;
+            opponentTransform.GetComponent<MageControllerNew>().oppoPos = magePos.Left;
+        }
+        else if (currentPos == magePos.Right)
+        {
+            oldMagePosition = transform.position;
+            transform.position = ourIslandTransforms[1].position + (oldMagePosition - ourIslandTransforms[2].position);
+            if (!isBot) mainCamera.transform.position += transform.position - oldMagePosition;
+            currentPos = magePos.Middle;
+            opponentTransform.GetComponent<MageControllerNew>().oppoPos = magePos.Middle;
+        }
+    }
+
+    private void botShooting()
+    {
+        if (oldSpellFactor != spellFactor)
+        {
+            if (spellFactor <= 1.5f)
             {
-                targetTransform.position = hit.point;
-                mouseRayObject.rotation = Quaternion.LookRotation(ray.direction);
+                oldSpellFactor = spellFactor;
+                currentSpell = spellElement.Ice;
+                headFireBig.GetComponent<VisualEffect>().visualEffectAsset = fireBigVFX1;
+                headFireSmall.GetComponent<VisualEffect>().visualEffectAsset = fireSmallVFX1;
+
+            }
+            else if (spellFactor > 1.5f && spellFactor <= 2.4f)
+            {
+                oldSpellFactor = spellFactor;
+                currentSpell = spellElement.Storm;
+                headFireBig.GetComponent<VisualEffect>().visualEffectAsset = fireBigVFX2;
+                headFireSmall.GetComponent<VisualEffect>().visualEffectAsset = fireSmallVFX2;
+
+            }
+            else if (spellFactor > 2.4f && spellFactor <= 3.2f)
+            {
+                oldSpellFactor = spellFactor;
+                currentSpell = spellElement.Fire;
+                headFireBig.GetComponent<VisualEffect>().visualEffectAsset = fireBigVFX3;
+                headFireSmall.GetComponent<VisualEffect>().visualEffectAsset = fireSmallVFX3;
+            }
+            else
+            {
+                oldSpellFactor = spellFactor;
+                currentSpell = spellElement.Shield;
+
+                if (shieldLeft > 0)
+                {
+                    currentSpell = spellElement.Shield;
+                    shieldProtected = true;
+
+                    Transform spellTransform = Instantiate(
+                        shieldTransform,
+                        transform.position + new Vector3(0, 0.5f, 0),
+                        transform.rotation
+                        );
+
+                    shieldLeft -= 1;
+                    opponentTransform.GetComponent<MageControllerNew>().oppoShieldLeft -= 1;
+
+                    opponentTransform.GetComponent<MageControllerNew>().healthBar2.setShield(shieldLeft);
+                    healthBar1.setShield(shieldLeft);
+                    healthBar2.setShield(oppoShieldLeft);
+                    StartCoroutine(DestroyShield(spellTransform, 3.0f));
+                }
+                else
+                {
+                    spellFactor = UnityEngine.Random.Range(0.0f, 3.2f);
+                    Debug.Log("Auto change to attack spell!");
+                }
             }
 
-            // Both mouse and phone screen tap
-            StateMachineTransition();
 
-            if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
+            // Start shooting
+            OnCastingStarts?.Invoke(this, new OnCastingStartsEventArgs
             {
-                if (currentPos == magePos.Middle)
-                {
-                    oldMagePosition = transform.position;
-                    transform.position = ourIslandTransforms[0].position + (oldMagePosition - ourIslandTransforms[1].position);
-                    mainCamera.transform.position += transform.position - oldMagePosition;
-                    currentPos = magePos.Left;
-                    opponentTransform.GetComponent<MageControllerNew>().oppoPos = magePos.Left;
-                }
-                else if (currentPos == magePos.Right)
-                {
-                    oldMagePosition = transform.position;
-                    transform.position = ourIslandTransforms[1].position + (oldMagePosition - ourIslandTransforms[2].position);
-                    mainCamera.transform.position += transform.position - oldMagePosition;
-                    currentPos = magePos.Middle;
-                    opponentTransform.GetComponent<MageControllerNew>().oppoPos = magePos.Middle;
-                }
+                wandTransform = this.wandTransform,
+                islandTargetTransform = this.currentTarget,
+                spell = (int)currentSpell
+            });
+
+            if (currentTarget.name == "Select_Highlight_2")
+            {
+                targetPos = magePos.Left;
             }
-            if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
+            else if (currentTarget.name == "Select_Highlight_1")
             {
-                if (currentPos == magePos.Middle)
-                {
-                    oldMagePosition = transform.position;
-                    transform.position = ourIslandTransforms[2].position + (oldMagePosition - ourIslandTransforms[1].position);
-                    mainCamera.transform.position += transform.position - oldMagePosition;
-                    currentPos = magePos.Right;
-                    opponentTransform.GetComponent<MageControllerNew>().oppoPos = magePos.Right;
-                }
-                else if (currentPos == magePos.Left)
-                {
-                    oldMagePosition = transform.position;
-                    transform.position = ourIslandTransforms[1].position + (oldMagePosition - ourIslandTransforms[0].position);
-                    mainCamera.transform.position += transform.position - oldMagePosition;
-                    currentPos = magePos.Middle;
-                    opponentTransform.GetComponent<MageControllerNew>().oppoPos = magePos.Middle;
-                }
+                targetPos = magePos.Middle;
+            }
+            else if (currentTarget.name == "Select_Highlight_0")
+            {
+                targetPos = magePos.Right;
+            }
+
+            if (currentSpell == spellElement.Ice)
+            {
+                StartCoroutine(Damage(1, 0.707f));
+            }
+            else if (currentSpell == spellElement.Storm)
+            {
+                StartCoroutine(Damage(2, 1.0f));
+            }
+            else if (currentSpell == spellElement.Fire)
+            {
+                StartCoroutine(Damage(3, 1.414f));
             }
         }
     }
@@ -396,7 +572,11 @@ public class MageControllerNew : MonoBehaviour
                         transform.position + new Vector3(0, 0.5f, 0),
                         transform.rotation
                         );
+
                     shieldLeft -= 1;
+                    opponentTransform.GetComponent<MageControllerNew>().oppoShieldLeft -= 1;
+
+                    opponentTransform.GetComponent<MageControllerNew>().healthBar2.setShield(shieldLeft);
                     healthBar1.setShield(shieldLeft);
                     healthBar2.setShield(oppoShieldLeft);
                     StartCoroutine(DestroyShield(spellTransform, 3.0f));
@@ -519,7 +699,10 @@ public class MageControllerNew : MonoBehaviour
         targetVector = Vector3.Normalize(targetTransform.position - mouseRayObject.position);
 
         // Rigid body facing rotation
-        rBody.MoveRotation(Quaternion.Euler(new Vector3(0, 0.0f * Mathf.Atan2(targetVector.x, targetVector.z) * Mathf.Rad2Deg, 0)));
+        if (!isBot)
+        {
+            rBody.MoveRotation(Quaternion.Euler(new Vector3(0, 0.0f * Mathf.Atan2(targetVector.x, targetVector.z) * Mathf.Rad2Deg, 0)));
+        }
         spineController.rotation = Quaternion.Euler(new Vector3(0, 1.0f * Mathf.Atan2(targetVector.x, targetVector.z) * Mathf.Rad2Deg, 0));
 
         rightHandController.position = rightHandTarget.position;
@@ -529,7 +712,7 @@ public class MageControllerNew : MonoBehaviour
     private IEnumerator Damage(int spell, float delayTime)
     {
         yield return new WaitForSeconds(delayTime);
-        if (!opponentTransform.GetComponent<MageControllerNew>().shieldProtected)
+        if (!opponentTransform.GetComponent<MageControllerNew>().shieldProtected && !gameOver)
         {
             if (oppoPos == targetPos)
             {
@@ -567,8 +750,29 @@ public class MageControllerNew : MonoBehaviour
         GameObject.Destroy(shieldInstance.gameObject);
     }
 
+    private IEnumerator moveFactorGen()
+    {
+        yield return new WaitForSeconds(4);
+        while (true)
+        {
+            moveFactor = UnityEngine.Random.Range(0.0f, 1.0f);
+            yield return new WaitForSeconds(4);
+        }
+    }
+
+    private IEnumerator spellFactorGen()
+    {
+        yield return new WaitForSeconds(1);
+        while (true)
+        {
+            spellFactor = UnityEngine.Random.Range(0.0f, 4.0f);
+            yield return new WaitForSeconds(4);
+        }
+    }
+
     private void endGame(bool win)
     {
+        gameOver = true;
         if (win)
         {
             Debug.Log("Player " + playerIndex + " won!");

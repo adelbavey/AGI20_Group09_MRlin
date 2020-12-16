@@ -40,7 +40,7 @@ VisualEffect:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5543014017812640258}
   m_Enabled: 1
-  m_Asset: {fileID: 8926484042661614526, guid: 6c5e16e2ba4715d45832ed3d606c4ff8, type: 3}
+  m_Asset: {fileID: 8926484042661614526, guid: 0f7d2f7ddc43af54abedfdb18650bc18, type: 3}
   m_InitialEventName: OnPlay
   m_InitialEventNameOverriden: 0
   m_StartSeed: 0
@@ -48,7 +48,7 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 8.340878
+      - m_Value: 8.356048
         m_Name: Distance
         m_Overridden: 1
     m_Vector2f:
