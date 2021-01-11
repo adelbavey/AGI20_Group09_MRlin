@@ -8,10 +8,13 @@ using Vexpot.ColorTrackerDemo;
 
 public class MageControllerNew : MonoBehaviour
 {
-    [Tooltip("If this is an AI")]
-    public bool isBot = false;
+    [Tooltip("User testing")]
+    public bool testingMode;
+    public Transform patternDisplay;
     [Tooltip("If this is controlled by a phone")]
     public bool gyroInteraction = false;
+    [Tooltip("If this is an AI")]
+    public bool isBot = false;
     [Tooltip("1: Player 1; 2: Player 2")]
     public int playerIndex = 1;
     public Transform opponentTransform;
@@ -149,6 +152,8 @@ public class MageControllerNew : MonoBehaviour
             headSparks.GetComponent<VisualEffect>().visualEffectAsset = headSparksVFX1;
             highlightLayer1 = LayerMask.GetMask("Highlight1");
             highlightLayer2 = LayerMask.GetMask("Highlight2");
+
+            patternDisplay.GetComponent<MRlinTesting>().testingMode = testingMode == true ? true : false;
         }
         else if (playerIndex == 2)
         {
@@ -168,13 +173,14 @@ public class MageControllerNew : MonoBehaviour
 
         wandMagicParticle = wandMagicTransform.GetComponent<ParticleSystem>();
         wandMagicSound = wandMagicTransform.GetComponent<AudioSource>();
-        wandMagicSound.volume = 0.5f;
+        wandMagicSound.volume = 0.8f;
         wandMagicTrail = wandMagicTransform.GetComponent<TrailRenderer>();
         mainCamera = Camera.main;
 
         currentPhase = gamePhase.Idle;
 
-        Cursor.visible = false;
+        Cursor.visible = gyroInteraction == true ? true : false;
+
         wandMagicTrail.enabled = false;
 
         currentHealth = 100;
@@ -203,6 +209,8 @@ public class MageControllerNew : MonoBehaviour
 
         ftr = GameObject.FindGameObjectWithTag("TrackCamera").GetComponent<FruitTrailRenderer>();
         justMoved = false;
+
+        if (testingMode) moveRight();
     }
 
     // Update is called once per frame
@@ -260,47 +268,49 @@ public class MageControllerNew : MonoBehaviour
                     //}
 
                     //Camera-controlled movement
-                    Vector3 positionTarget = ftr.getTargetPos();
-                    int x = (int)positionTarget.x;
-
-                    //Debug.Log(x);
-
-                    if (x <= -1)
+                    if (!testingMode)
                     {
-                        if (currentPos == magePos.Middle)
+                        Vector3 positionTarget = ftr.getTargetPos();
+                        float x = positionTarget.x;
+
+                        //Debug.Log(x);
+
+                        if (x <= -1.5)
                         {
-                            moveLeft();
+                            if (currentPos == magePos.Middle)
+                            {
+                                moveLeft();
+                            }
+                            else if (currentPos == magePos.Right)
+                            {
+                                moveLeft();
+                                moveLeft();
+                            }
                         }
-                        else if (currentPos == magePos.Right)
+                        else if (x >= 1.5)
                         {
-                            moveLeft();
-                            moveLeft();
+                            if (currentPos == magePos.Middle)
+                            {
+                                moveRight();
+                            }
+                            else if (currentPos == magePos.Left)
+                            {
+                                moveRight();
+                                moveRight();
+                            }
+                        }
+                        else
+                        {
+                            if (currentPos == magePos.Left)
+                            {
+                                moveRight();
+                            }
+                            else if (currentPos == magePos.Right)
+                            {
+                                moveLeft();
+                            }
                         }
                     }
-                    else if (x >= 2)
-                    {
-                        if (currentPos == magePos.Middle)
-                        {
-                            moveRight();
-                        }
-                        else if (currentPos == magePos.Left)
-                        {
-                            moveRight();
-                            moveRight();
-                        }
-                    }
-                    else
-                    {
-                        if (currentPos == magePos.Left)
-                        {
-                            moveRight();
-                        }
-                        else if (currentPos == magePos.Right)
-                        {
-                            moveLeft();
-                        }
-                    }
-
                 }
 
                 // Keyboard and mouse interaction
@@ -768,7 +778,7 @@ public class MageControllerNew : MonoBehaviour
         {
             if (oppoPos == targetPos)
             {
-                opponentTransform.GetComponent<MageControllerNew>().hitAudio.volume = 1.0f;
+                opponentTransform.GetComponent<MageControllerNew>().hitAudio.volume = 0.4f;
                 opponentTransform.GetComponent<MageControllerNew>().hitAudio.Play();
                 if (opponentTransform.GetComponent<MageControllerNew>().gyroInteraction)
                 {
@@ -831,7 +841,7 @@ public class MageControllerNew : MonoBehaviour
 
     private IEnumerator justMovedChange()
     {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(1.0f);
         justMoved = false;
     }
 
@@ -859,7 +869,11 @@ public class MageControllerNew : MonoBehaviour
 
     public void vibratePhone()
     {
+#if UNITY_IOS
+      Handheld.Vibrate();
+#elif UNITY_ANDROID
         Handheld.Vibrate();
+#endif
     }
 }
 

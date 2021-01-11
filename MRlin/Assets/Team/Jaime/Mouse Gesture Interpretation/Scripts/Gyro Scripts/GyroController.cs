@@ -141,5 +141,4 @@ public class GyroController : MonoBehaviour
         return new Quaternion(-q.x, -q.z, -q.y, q.w);
      }
 
-
 }

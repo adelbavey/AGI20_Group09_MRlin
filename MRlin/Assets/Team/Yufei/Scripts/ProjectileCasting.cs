@@ -60,7 +60,7 @@ public class ProjectileCasting : MonoBehaviour
         Transform spellTransform = Instantiate(SpellProjectile, e.wandTransform.position, Quaternion.LookRotation(shootingPath));
         spellTransform.GetChild(0).GetComponent<VisualEffect>().playRate = this.playRate * 1.1f;
         
-        castingAudio.volume = 0.7f;
+        castingAudio.volume = 0.2f;
         castingAudio.Play();
     }
 

@@ -57,7 +57,7 @@ public class PlayerInputMRlin : MonoBehaviour
     [Tooltip("The initial width of the lineRenderer")]
     public float widthI = 0.009f;
     [Tooltip("The final width of the lineRenderer")]
-    public float widthF;
+    public float widthF = 0.009f;
     [Tooltip("The distance that the lineRenderer is being create from the camera")]
     public float zline = 0.5f;
     [Tooltip("Material used in the lineRenderer")]
@@ -238,9 +238,9 @@ public class PlayerInputMRlin : MonoBehaviour
                 gestureCM.setIsGesturing(true);
                 gestureCM.mouseData.Add(pos);
 
-                //Debug.Log($"Input position: {pos}");
+                Debug.Log($"Input position: {pos}");
                 Cursor.lockState = CursorLockMode.None;
-                Cursor.visible = true;
+                Cursor.visible = false;
                 lineRenderer.positionCount = i + 1;
                 vector = new Vector3((float)pos.x, (float)pos.y, this.zline);
                 lineRenderer.SetPosition(this.i, Camera.main.ScreenToWorldPoint(vector));
@@ -249,10 +249,10 @@ public class PlayerInputMRlin : MonoBehaviour
             }
             else if (usingGyro && Input.touchCount > 0)
             {
-                for (int i = 0; i < Input.touchCount; ++i)
-                {
-                    if (Input.GetTouch(i).phase == TouchPhase.Began || Input.GetTouch(i).phase == TouchPhase.Moved || Input.GetTouch(i).phase == TouchPhase.Stationary)
-                    {
+                //for (int i = 0; i < Input.touchCount; ++i)
+                //{
+                    //if (Input.GetTouch(i).phase == TouchPhase.Began || Input.GetTouch(i).phase == TouchPhase.Moved || Input.GetTouch(i).phase == TouchPhase.Stationary)
+                    //{
                         // Here it is necessary to multiply by some number between 70 and 130 so the gesture is big enough in order to be processed
                         Vector3 pos = this.GetComponent<MageControllerNew>().getTargetPos() * 10;
 
@@ -269,14 +269,14 @@ public class PlayerInputMRlin : MonoBehaviour
                         gestureCM.setIsGesturing(true);
                         gestureCM.mouseData.Add(pos);
 
-
-                        //Debug.Log($"Input position: {pos}");
+                        Debug.Log($"Input position: {pos}");
+                        Cursor.visible = true;
                         lineRenderer.positionCount = i + 1;
                         vector = new Vector3((float)pos.x, (float)pos.y, this.zline);
                         lineRenderer.SetPosition(this.i, Camera.main.ScreenToWorldPoint(vector));
                         ++i;
-                    }
-                }
+                    //}
+                //}
                 return;
             }
         }
