@@ -562,7 +562,16 @@ public class MageControllerNew : MonoBehaviour
             if (Input.GetMouseButtonUp(0))
             {
                 StartSpellingPhase(false);
-                StartSelectingPhase(true);
+
+                if (testingMode)
+                {
+                    patternDisplay.GetComponent<MRlinTesting>().setPatternIndex(gestureCode);
+                    currentPhase = gamePhase.Idle;
+                }
+                else
+                {
+                    StartSelectingPhase(true);
+                }
             }
         }
         else if (currentPhase == gamePhase.Selecting)
