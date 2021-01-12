@@ -6426,6 +6426,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   testingMode: 0
   background: {fileID: 1952612640}
+  patternIndex: 0
+  sprites:
+  - {fileID: 21300000, guid: 043d02c4569df9a4a9229352195338d5, type: 3}
+  - {fileID: 21300000, guid: a996c9978a58a0f4882a3544f97a510a, type: 3}
+  - {fileID: 21300000, guid: 498912bc481694445b2729ec40921a61, type: 3}
+  - {fileID: 21300000, guid: dcf5add2bc303174d8ebf53cbac9aed8, type: 3}
 --- !u!1 &1689875982
 GameObject:
   m_ObjectHideFlags: 0
